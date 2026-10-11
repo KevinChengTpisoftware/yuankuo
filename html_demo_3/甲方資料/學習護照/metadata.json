@@ -1,0 +1,6 @@
+{
+  "name": "學習護照天地",
+  "description": "復健學習護照 - 150 項生活功能解鎖歷程，結合 28 張生活願望圖卡、目標導向賦能、成就榮譽系統與個案追蹤管理。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,167 @@
+- generic [ref=e2]:
+  - button "靜音" [ref=e3]:
+    - img [ref=e4]
+  - generic [ref=e43]:
+    - banner [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - heading "食：米其林大廚" [level=1] [ref=e48]
+            - paragraph [ref=e49]: 從「床上/坐姿」到「站姿」，從「被動進食」到「主動備餐」，找回大飽口福的尊嚴。
+          - generic [ref=e50]:
+            - button "工具選單" [ref=e51]:
+              - img [ref=e53]
+              - generic [ref=e57]: 工具選單
+            - button "成就獎盃" [ref=e58]:
+              - img [ref=e60]
+              - generic [ref=e66]: 成就獎盃
+            - button "1/150 達成率 1%" [ref=e294] [cursor=pointer]:
+              - img [ref=e68]
+              - generic [ref=e71]: 1/150
+              - generic [ref=e72]: 達成率 1%
+        - generic [ref=e73]:
+          - button "食 食：米其林大廚" [ref=e74]:
+            - generic [ref=e76]: 食
+            - generic [ref=e77]: 食：米其林大廚
+          - button "衣 衣：時尚伸展台" [ref=e78]:
+            - generic [ref=e80]: 衣
+            - generic [ref=e81]: 衣：時尚伸展台
+          - button "住 住：住宅改造王" [ref=e82]:
+            - generic [ref=e84]: 住
+            - generic [ref=e85]: 住：住宅改造王
+          - button "行 行：拓荒者行動" [ref=e86]:
+            - generic [ref=e88]: 行
+            - generic [ref=e89]: 行：拓荒者行動
+          - button "育 育：知性研究所" [ref=e90]:
+            - generic [ref=e92]: 育
+            - generic [ref=e93]: 育：知性研究所
+          - button "樂 樂：開心農場" [ref=e94]:
+            - generic [ref=e96]: 樂
+            - generic [ref=e97]: 樂：開心農場
+          - button "🥇 選修：學習徽章" [ref=e99]:
+            - generic [ref=e101]: 🥇
+            - generic [ref=e102]: 選修：學習徽章
+          - button "👑 白金成就" [ref=e103]:
+            - generic [ref=e105]: 👑
+            - generic [ref=e106]: 白金成就
+    - main [ref=e107]:
+      - navigation [ref=e108]:
+        - button "銅盃任務 階段目標 • 1/13" [ref=e295]:
+          - img [ref=e111]
+          - generic [ref=e117]:
+            - generic [ref=e118]: 銅盃任務
+            - generic [ref=e119]: 階段目標 • 1/13
+        - button "銀盃任務 進階挑戰 • 0/7" [ref=e120]:
+          - img [ref=e122]
+          - generic [ref=e128]:
+            - generic [ref=e129]: 銀盃任務
+            - generic [ref=e130]: 進階挑戰 • 0/7
+        - button "金盃任務 真實社會 • 0/5" [ref=e131]:
+          - img [ref=e133]
+          - generic [ref=e139]:
+            - generic [ref=e140]: 金盃任務
+            - generic [ref=e141]: 真實社會 • 0/5
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - heading "階段 A：餐具主控權（進食基礎）" [level=3] [ref=e146]
+          - button "黃金左手/右手 能獨立用健側手（或經輔具改裝的患側手）拿湯匙舀起固體食物（如豆腐、滷蛋）送進嘴裡，且中途不掉落。 共學夥伴 自己完成 家屬陪伴 多功能型照顧服務員 醫療團隊 達成" [active] [ref=e296] [cursor=pointer]:
+            - generic [ref=e148]:
+              - img [ref=e150]
+              - generic [ref=e153]:
+                - heading "黃金左手/右手" [level=4] [ref=e154]
+                - paragraph [ref=e155]: 能獨立用健側手（或經輔具改裝的患側手）拿湯匙舀起固體食物（如豆腐、滷蛋）送進嘴裡，且中途不掉落。
+            - generic [ref=e297]:
+              - generic [ref=e298]:
+                - img [ref=e299]
+                - generic [ref=e304]: 共學夥伴
+              - generic [ref=e305]:
+                - button "自己完成" [ref=e306]
+                - button "家屬陪伴" [ref=e307]
+                - button "多功能型照顧服務員" [ref=e308]
+                - button "醫療團隊" [ref=e309]
+            - generic:
+              - generic: 達成
+        - button "完美湯料理 舀湯至 7 分滿，連續 5 口送進嘴裡，湯汁不溢出到圍兜或桌上。" [ref=e157] [cursor=pointer]:
+          - generic [ref=e158]:
+            - img [ref=e160]
+            - generic [ref=e163]:
+              - heading "完美湯料理" [level=4] [ref=e164]
+              - paragraph [ref=e165]: 舀湯至 7 分滿，連續 5 口送進嘴裡，湯汁不溢出到圍兜或桌上。
+        - button "夾起新希望 使用普通筷子或學習筷，成功夾起 5 塊小餅乾或切塊水果。" [ref=e167] [cursor=pointer]:
+          - generic [ref=e168]:
+            - img [ref=e170]
+            - generic [ref=e173]:
+              - heading "夾起新希望" [level=4] [ref=e174]
+              - paragraph [ref=e175]: 使用普通筷子或學習筷，成功夾起 5 塊小餅乾或切塊水果。
+        - generic [ref=e176]:
+          - heading "階段 B：容器與包裝對抗" [level=3] [ref=e179]
+          - button "吸管神射手 用患側手固定飲料杯（或使用杯架），健側手將吸管準確插入利樂包或手搖杯中。" [ref=e180] [cursor=pointer]:
+            - generic [ref=e181]:
+              - img [ref=e183]
+              - generic [ref=e186]:
+                - heading "吸管神射手" [level=4] [ref=e187]
+                - paragraph [ref=e188]: 用患側手固定飲料杯（或使用杯架），健側手將吸管準確插入利樂包或手搖杯中。
+        - generic [ref=e189]:
+          - heading "階段 B：容器與包裝對抗（精細動作與雙手協調）" [level=3] [ref=e192]
+          - button "點心時間 雙手協調撕開餅乾包裝袋，或單手利用輔具撕開（不撒得到處都是）。" [ref=e193] [cursor=pointer]:
+            - generic [ref=e194]:
+              - img [ref=e196]
+              - generic [ref=e199]:
+                - heading "點心時間" [level=4] [ref=e200]
+                - paragraph [ref=e201]: 雙手協調撕開餅乾包裝袋，或單手利用輔具撕開（不撒得到處都是）。
+        - generic [ref=e202]:
+          - heading "階段 B：容器與包裝對抗" [level=3] [ref=e205]
+          - button "寶特瓶解鎖 利用大腿夾住、止滑墊或患側手固定瓶身，健側手轉開全新寶特瓶蓋。" [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]:
+              - img [ref=e209]
+              - generic [ref=e212]:
+                - heading "寶特瓶解鎖" [level=4] [ref=e213]
+                - paragraph [ref=e214]: 利用大腿夾住、止滑墊或患側手固定瓶身，健側手轉開全新寶特瓶蓋。
+        - generic [ref=e215]:
+          - heading "階段 B：容器與包裝對抗（精細動作與雙手協調）" [level=3] [ref=e218]
+          - button "開罐大師 獨立拉開易開罐飲料的拉環（如運動飲料、八寶粥）。" [ref=e219] [cursor=pointer]:
+            - generic [ref=e220]:
+              - img [ref=e222]
+              - generic [ref=e225]:
+                - heading "開罐大師" [level=4] [ref=e226]
+                - paragraph [ref=e227]: 獨立拉開易開罐飲料的拉環（如運動飲料、八寶粥）。
+        - generic [ref=e228]:
+          - heading "階段 C：餐後與日常清潔（職能功能）" [level=3] [ref=e231]
+          - button "優雅擦嘴 單手抽取衛生紙，並準確擦拭嘴角的髒污與油漬。" [ref=e232] [cursor=pointer]:
+            - generic [ref=e233]:
+              - img [ref=e235]
+              - generic [ref=e238]:
+                - heading "優雅擦嘴" [level=4] [ref=e239]
+                - paragraph [ref=e240]: 單手抽取衛生紙，並準確擦拭嘴角的髒污與油漬。
+        - button "餐後斷捨離 用健側手將碗盤上的廚餘刮乾淨，並將垃圾分類丟入垃圾桶。" [ref=e242] [cursor=pointer]:
+          - generic [ref=e243]:
+            - img [ref=e245]
+            - generic [ref=e248]:
+              - heading "餐後斷捨離" [level=4] [ref=e249]
+              - paragraph [ref=e250]: 用健側手將碗盤上的廚餘刮乾淨，並將垃圾分類丟入垃圾桶。
+        - button "潔牙儀式 在洗手台坐姿下，單手或雙手配合在牙刷上擠出牙膏，並完成刷牙。" [ref=e252] [cursor=pointer]:
+          - generic [ref=e253]:
+            - img [ref=e255]
+            - generic [ref=e258]:
+              - heading "潔牙儀式" [level=4] [ref=e259]
+              - paragraph [ref=e260]: 在洗手台坐姿下，單手或雙手配合在牙刷上擠出牙膏，並完成刷牙。
+        - generic [ref=e261]:
+          - heading "階段 D：科技復健連動（賦健基地特別任務）" [level=3] [ref=e264]
+          - button "等速小當家 在特多勁（等速運動）完成上肢當日訓練組數。" [ref=e265] [cursor=pointer]:
+            - generic [ref=e266]:
+              - img [ref=e268]
+              - generic [ref=e271]:
+                - heading "等速小當家" [level=4] [ref=e272]
+                - paragraph [ref=e273]: 在特多勁（等速運動）完成上肢當日訓練組數。
+        - button "軌道運送員·初階 在軌道/懸吊支持下坐姿，將一個空碗從左側桌子移動到右側桌子 10 次。" [ref=e275] [cursor=pointer]:
+          - generic [ref=e276]:
+            - img [ref=e278]
+            - generic [ref=e281]:
+              - heading "軌道運送員·初階" [level=4] [ref=e282]
+              - paragraph [ref=e283]: 在軌道/懸吊支持下坐姿，將一個空碗從左側桌子移動到右側桌子 10 次。
+        - button "吞嚥大挑戰 配合語言治療師，順利完成安全吞嚥各種質地（糊狀/軟質）食物不嗆咳。" [ref=e285] [cursor=pointer]:
+          - generic [ref=e286]:
+            - img [ref=e288]
+            - generic [ref=e291]:
+              - heading "吞嚥大挑戰" [level=4] [ref=e292]
+              - paragraph [ref=e293]: 配合語言治療師，順利完成安全吞嚥各種質地（糊狀/軟質）食物不嗆咳。

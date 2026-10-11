@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個別化照顧計畫｜願望蒐集 × 生活功能解鎖護照 整合展示</title>
+<style>
+  :root{
+    --yk-main:#2f6f6b;
+    --yk-main-dark:#245551;
+    --yk-main-light:#e5f1f0;
+    --yk-accent:#e08a3c;
+    --yk-gold:#c99a2e;
+    --yk-green:#3aa757;
+    --yk-purple:#7a5ea8;
+    --bg:#f3f6f5;
+    --card:#ffffff;
+    --border:#dde6e5;
+    --text:#1f2937;
+    --text-sub:#5c7377;
+    --danger:#d64545;
+    --bronze:#b0764a;
+    --silver:#8a97a3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  /* ===== Top Bar ===== */
+  .topbar{
+    display:flex;
+    align-items:center;
+    background:linear-gradient(90deg,#245551,#2f6f6b);
+    color:#fff;
+    padding:0 20px;
+    height:64px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    position:sticky;
+    top:0;
+    z-index:100;
+    border-bottom:3px solid var(--yk-accent);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-right:20px;
+    margin-right:20px;
+    border-right:1px solid rgba(255,255,255,.25);
+    flex-shrink:0;
+  }
+  .brand .logo{
+    width:40px;height:40px;border-radius:9px;background:#fff;color:var(--yk-main-dark);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;
+  }
+  .brand-text{line-height:1.25;}
+  .brand-text .title{font-size:16px;font-weight:700;letter-spacing:.5px;}
+  .brand-text .sub{font-size:11px;color:#d3e9e6;}
+  .tabs{
+    display:flex;
+    gap:6px;
+    flex:1;
+    overflow-x:auto;
+  }
+  .tab-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    color:#e7f0ef;
+    padding:9px 18px;
+    border-radius:8px 8px 0 0;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .tab-btn:hover{background:rgba(255,255,255,.18);}
+  .tab-btn.active{
+    background:var(--bg);
+    color:var(--yk-main-dark);
+    border-color:var(--bg);
+  }
+  .tab-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .env-tag{
+    margin-left:auto;
+    padding-left:16px;
+    font-size:12px;
+    color:#d5e6e3;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .env-tag .pulse{
+    width:8px;height:8px;border-radius:50%;background:#5be07c;
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(91,224,124,.6);}
+    70%{box-shadow:0 0 0 6px rgba(91,224,124,0);}
+    100%{box-shadow:0 0 0 0 rgba(91,224,124,0);}
+  }
+
+  /* ===== Layout ===== */
+  .app{display:flex; min-height:calc(100vh - 64px);}
+  .sidebar{
+    width:236px;
+    background:#fff;
+    border-right:1px solid var(--border);
+    padding:18px 0;
+    flex-shrink:0;
+  }
+  .sidebar .persona{
+    padding:0 18px 16px 18px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--border);
+  }
+  .sidebar .persona .role{font-size:12px;color:var(--text-sub);}
+  .sidebar .persona .name{font-size:15px;font-weight:700;margin-top:2px;}
+  .menu-group{margin-bottom:14px;}
+  .menu-group .group-title{
+    font-size:11px;
+    color:var(--text-sub);
+    padding:6px 18px;
+    letter-spacing:1px;
+    font-weight:700;
+  }
+  .menu-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 18px;
+    font-size:13.5px;
+    color:#3a4453;
+    cursor:pointer;
+    border-left:3px solid transparent;
+    transition:all .12s ease;
+  }
+  .menu-item:hover{background:var(--yk-main-light);}
+  .menu-item.active{
+    background:var(--yk-main-light);
+    border-left-color:var(--yk-main);
+    color:var(--yk-main-dark);
+    font-weight:700;
+  }
+  .menu-item .ico{width:18px;text-align:center;flex-shrink:0;}
+  .menu-item .badge{
+    margin-left:auto;
+    background:var(--yk-accent);
+    color:#fff;
+    font-size:10px;
+    padding:1px 6px;
+    border-radius:10px;
+  }
+
+  .content{flex:1; padding:22px 28px 48px 28px; overflow-x:hidden;}
+  .breadcrumb{font-size:12px;color:var(--text-sub); margin-bottom:6px;}
+  .page-title{font-size:20px; font-weight:800; color:var(--text); margin-bottom:2px;}
+  .page-desc{font-size:13px;color:var(--text-sub); margin-bottom:20px; max-width:820px; line-height:1.6;}
+
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .stat-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card .stat-label{font-size:12px;color:var(--text-sub);}
+  .stat-card .stat-value{font-size:26px;font-weight:800;margin-top:4px;color:var(--yk-main-dark);}
+  .stat-card .stat-trend{font-size:11px;margin-top:6px;color:var(--yk-green);}
+  .stat-card .stat-trend.down{color:var(--danger);}
+  .stat-card .accent{
+    position:absolute;right:-18px;top:-18px;width:64px;height:64px;border-radius:50%;
+    background:var(--yk-main-light); opacity:.7;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-bottom:18px;
+    overflow:hidden;
+  }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; border-bottom:1px solid var(--border); gap:12px;
+  }
+  .panel-head h3{margin:0;font-size:14.5px;font-weight:700;}
+  .panel-head .tag{
+    font-size:11px; background:var(--yk-main-light); color:var(--yk-main-dark);
+    padding:2px 8px; border-radius:12px; font-weight:700; white-space:nowrap;
+  }
+  .panel-body{padding:16px 18px;}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--border);}
+  th{color:var(--text-sub); font-weight:700; font-size:12px; background:#fafbfb;}
+  tr:hover td{background:#f8fafa;}
+  .pill{display:inline-block; padding:2px 10px; border-radius:20px; font-size:11.5px; font-weight:700;}
+  .pill.green{background:#e5f7ee; color:var(--yk-green);}
+  .pill.blue{background:var(--yk-main-light); color:var(--yk-main-dark);}
+  .pill.gold{background:#fbf1dc; color:var(--yk-gold);}
+  .pill.red{background:#fdeaea; color:var(--danger);}
+  .pill.gray{background:#eef0f2; color:#667085;}
+  .pill.purple{background:#efe9f6; color:var(--yk-purple);}
+
+  .two-col{display:grid; grid-template-columns:1.4fr 1fr; gap:16px;}
+  @media(max-width:1100px){.two-col{grid-template-columns:1fr;} .grid{grid-template-columns:repeat(2,1fr);}}
+
+  .flow-steps{display:flex; flex-wrap:wrap; gap:0;}
+  .flow-step{
+    flex:1; min-width:150px; background:#fafbfb; border:1px dashed var(--border);
+    border-radius:8px; padding:12px; margin:4px; text-align:center; font-size:12.5px;
+  }
+  .flow-step .n{
+    width:24px;height:24px;border-radius:50%;background:var(--yk-main); color:#fff;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 6px auto;font-size:12px;font-weight:700;
+  }
+  .flow-step small{color:var(--text-sub);display:block;margin-top:3px;}
+
+  .btn{
+    display:inline-block; padding:7px 14px; border-radius:6px; font-size:12.5px; font-weight:700;
+    border:1px solid var(--yk-main); color:var(--yk-main); background:#fff; cursor:pointer;
+  }
+  .btn.primary{background:var(--yk-main); color:#fff;}
+  .btn.ghost{border-color:var(--border); color:var(--text-sub);}
+  .btn:disabled{opacity:.5; cursor:default;}
+
+  .note{
+    font-size:12px; color:var(--text-sub); background:#fafbfb; border:1px solid var(--border);
+    border-radius:8px; padding:10px 12px; margin-top:10px; line-height:1.6;
+  }
+
+  .tabpage{display:none;}
+  .tabpage.active{display:block;}
+  .submenu{display:none;}
+  .submenu.active{display:block;}
+
+  /* ===== 願望蒐集：兩層瀏覽 ===== */
+  .cat-tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .cat-tab{
+    padding:10px 22px; border-radius:10px; border:1px solid var(--border); background:#fff;
+    font-size:15px; font-weight:700; cursor:pointer; color:#3a4453; min-width:64px; text-align:center;
+  }
+  .cat-tab:hover{border-color:var(--yk-main);}
+  .cat-tab.active{background:var(--yk-main); color:#fff; border-color:var(--yk-main);}
+
+  .card-wall{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media(max-width:900px){.card-wall{grid-template-columns:repeat(2,1fr);}}
+  .wish-card{
+    background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .wish-card:hover{transform:translateY(-3px); box-shadow:0 6px 18px rgba(47,111,107,.15);}
+  .wish-card .thumb{
+    height:120px; background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:40px; position:relative; border-bottom:1px solid var(--border);
+  }
+  .wish-card .thumb img{max-height:104px; max-width:88%; object-fit:contain;}
+  .wish-card .thumb .play{
+    position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.55); color:#fff;
+    width:26px;height:26px;border-radius:50%; display:flex;align-items:center;justify-content:center; font-size:12px;
+  }
+  .wish-card .cap{padding:10px 12px; font-size:13.5px; font-weight:700;}
+  .wish-card.picked{border-color:var(--yk-green); box-shadow:0 0 0 2px #e5f7ee inset;}
+  .wish-card .cap .mark{color:var(--yk-green); font-weight:800; margin-left:4px;}
+
+  .wall-pager{display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:13px; color:var(--text-sub);}
+
+  /* detail */
+  .detail{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:900px){.detail{grid-template-columns:1fr;}}
+  .detail .media{
+    background:#fff; border:1px solid var(--border); border-radius:12px; height:240px;
+    display:flex; align-items:center; justify-content:center; font-size:84px;
+  }
+  .detail .media img{max-height:210px; max-width:90%; object-fit:contain;}
+  .detail h4{margin:0 0 4px 0; font-size:18px;}
+  .detail .field{margin-top:14px;}
+  .detail .field label{display:block; font-size:12.5px; font-weight:700; color:var(--text-sub); margin-bottom:5px;}
+  .detail .field input[type=text]{
+    width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px;
+  }
+  .radio-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .radio-row .opt{
+    padding:6px 12px; border:1px solid var(--border); border-radius:20px; font-size:12.5px; cursor:pointer;
+  }
+  .radio-row .opt.sel{background:var(--yk-main); color:#fff; border-color:var(--yk-main);}
+
+  .basket{
+    position:relative;
+  }
+
+  /* ===== 護照 ===== */
+  .tier-nav{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+  .tier-btn{
+    display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:10px;
+    border:1px solid var(--border); background:#fff; cursor:pointer; font-size:13.5px; font-weight:700;
+  }
+  .tier-btn .medal{font-size:20px;}
+  .tier-btn small{display:block; font-weight:400; color:var(--text-sub); font-size:11.5px;}
+  .tier-btn.active{border-color:var(--yk-main); background:var(--yk-main-light); color:var(--yk-main-dark);}
+
+  .task-stage-title{font-size:14px; font-weight:800; margin:18px 0 8px; color:var(--yk-main-dark);}
+  .task-item{
+    border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:#fff;
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .task-item .tk-ico{font-size:24px; flex-shrink:0;}
+  .task-item .tk-body{flex:1;}
+  .task-item .tk-body h5{margin:0 0 3px; font-size:14px;}
+  .task-item .tk-body p{margin:0; font-size:12.5px; color:var(--text-sub); line-height:1.55;}
+  .task-item .tk-partner{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .task-item .tk-partner .lbl{font-size:11.5px; color:var(--text-sub); margin-right:2px;}
+  .task-item .tk-partner .p{
+    font-size:11.5px; padding:3px 9px; border:1px solid var(--border); border-radius:16px; cursor:pointer;
+  }
+  .task-item .tk-partner .p.sel{background:var(--yk-purple); color:#fff; border-color:var(--yk-purple);}
+  .task-item .tk-done{
+    flex-shrink:0; align-self:center; padding:7px 16px; border-radius:8px; border:1px solid var(--yk-green);
+    background:#fff; color:var(--yk-green); font-weight:800; font-size:12.5px; cursor:pointer;
+  }
+  .task-item.done{background:#f4fbf7; border-color:var(--yk-green);}
+  .task-item.done .tk-done{background:var(--yk-green); color:#fff;}
+
+  /* radar / bars */
+  .radar-wrap{display:flex; gap:26px; align-items:center; flex-wrap:wrap;}
+  .radar{width:220px;height:220px;}
+  .cap-bars{flex:1; min-width:240px;}
+  .cap-bar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:12.5px;}
+  .cap-bar-row .name{width:28px; font-weight:700;}
+  .cap-bar-row .track{flex:1; height:12px; background:#eef2f1; border-radius:6px; overflow:hidden;}
+  .cap-bar-row .fill{height:100%; background:linear-gradient(90deg,var(--yk-main),#6bb6b0);}
+  .cap-bar-row .val{width:40px; text-align:right; color:var(--text-sub);}
+
+  .cert{
+    border:3px double var(--yk-gold); border-radius:12px; padding:26px; text-align:center; background:#fffdf6;
+    max-width:520px;
+  }
+  .cert .seal{font-size:44px;}
+  .cert h3{margin:8px 0 4px; font-size:20px; color:var(--yk-main-dark);}
+  .cert p{margin:4px 0; font-size:13px; color:var(--text-sub);}
+
+  .kv{display:grid; grid-template-columns:120px 1fr; gap:6px 14px; font-size:13px;}
+  .kv dt{color:var(--text-sub);}
+  .kv dd{margin:0;}
+
+  ::-webkit-scrollbar{height:8px; width:8px;}
+  ::-webkit-scrollbar-thumb{background:#c7d0ce; border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">員郭</div>
+    <div class="brand-text">
+      <div class="title">個別化照顧計畫平台</div>
+      <div class="sub">住院復健 × 生活功能解鎖　整合展示 Demo</div>
+    </div>
+  </div>
+  <div class="tabs" id="tabbar">
+    <button class="tab-btn active" data-tab="overview"><span class="dot" style="background:#4da3ff"></span>計畫總覽</button>
+    <button class="tab-btn" data-tab="wish"><span class="dot" style="background:#5be07c"></span>願望蒐集</button>
+    <button class="tab-btn" data-tab="passport"><span class="dot" style="background:#f2c94c"></span>生活功能解鎖護照</button>
+    <button class="tab-btn" data-tab="result"><span class="dot" style="background:#c99a2e"></span>結案成果</button>
+  </div>
+  <div class="env-tag"><span class="pulse"></span>DEMO 展示環境（示意資料）</div>
+</div>
+
+<!-- ========================= 計畫總覽 ========================= -->
+<div class="tabpage active" id="page-overview">
+<div class="app">
+  <div class="sidebar">
+    <div class="persona">
+      <div class="role">登入身分</div>
+      <div class="name">治療師 / 個管</div>
+    </div>
+    <div class="menu-group">
+      <div class="group-title">總覽</div>
+      <div class="menu-item active" data-sub="o-flow"><span class="ico">🧭</span>計畫流程</div>
+      <div class="menu-item" data-sub="o-patient"><span class="ico">🧑‍🦽</span>個案進度</div>
+      <div class="menu-item" data-sub="o-arch"><span class="ico">🔗</span>系統整合說明</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="submenu active" id="o-flow">
+      <div class="breadcrumb">計畫總覽 / 流程</div>
+      <div class="page-title">個別化照顧計畫 — 六個月流程</div>
+      <div class="page-desc">
+        中風後失去生活自理能力的病人，住院 6 個月內恢復生活自理後出院。因期程長、易了無生趣，課程採遊戲化設計。
+        「願望蒐集」與「生活功能解鎖護照」為同一套系統的兩個分頁。
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>期程分段</h3></div>
+        <div class="panel-body">
+          <div class="flow-steps">
+            <div class="flow-step"><div class="n">1</div>入院時：願望蒐集<small>護理師｜圖卡/影片問意願，產出願望清單</small></div>
+            <div class="flow-step"><div class="n">2</div>前 3 個月：強力期<small>治療師｜院內高強度復健，不跑護照</small></div>
+            <div class="flow-step"><div class="n">3</div>後 3 個月：彈性解鎖期<small>病人/家屬/照服員｜護照闖關 150 項</small></div>
+            <div class="flow-step"><div class="n">4</div>出院前：返家整合 + 成果輸出<small>醫療團隊｜雷達圖、榮譽證書、匯出</small></div>
+          </div>
+          <div class="note">頭尾呼應：出院前的衛教內容 = 入院時那批圖卡 / 影片素材（從「看別人做」→「自己做到」）。</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>角色與職責</h3></div>
+          <div class="panel-body">
+            <table>
+              <tr><th>角色</th><th>職責</th></tr>
+              <tr><td>護理師</td><td>入院時執行願望蒐集、操作介面、填寫觀察備註</td></tr>
+              <tr><td>治療師</td><td>前 3 個月強力期主導；依願望清單規劃方向</td></tr>
+              <tr><td>病人 / 家屬</td><td>表達願望；後段陪伴闖關、選共學夥伴、按「達成」</td></tr>
+              <tr><td>多功能型照顧服務員</td><td>後段陪伴病人闖關</td></tr>
+              <tr><td>醫療團隊</td><td>結案評估、成果輸出、衛教</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>第一階段（MVP）範圍</h3></div>
+          <div class="panel-body">
+            <table>
+              <tr><th>要做</th><th>留待 2.0</th></tr>
+              <tr><td>願望蒐集模組（兩層瀏覽 + 詳情）</td><td>治療師後台 / 中臺</td></tr>
+              <tr><td>圖卡 40–60 張</td><td>全套 150 項圖卡</td></tr>
+              <tr><td>輕量登入（姓名 + 身分證後4碼 / 生日）</td><td>嚴格身分驗證</td></tr>
+              <tr><td>願望清單產出</td><td>願望與 150 項自動對應</td></tr>
+              <tr><td>與護照系統並行</td><td>PAC / SSO 串接、點數規則</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="o-patient">
+      <div class="breadcrumb">計畫總覽 / 個案</div>
+      <div class="page-title">個案進度總覽</div>
+      <div class="page-desc">追蹤各期程病人所在階段與護照達成率（示意資料）。</div>
+      <div class="grid">
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">在案病人</div><div class="stat-value">36</div><div class="stat-trend">▲ 本月 +5</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">強力期</div><div class="stat-value">14</div><div class="stat-trend">前 3 個月</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">彈性解鎖期</div><div class="stat-value">18</div><div class="stat-trend">後 3 個月</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">本月結案</div><div class="stat-value">4</div><div class="stat-trend">平均達成率 78%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>個案清單</h3></div>
+        <div class="panel-body">
+          <table>
+            <tr><th>病歷號</th><th>姓名</th><th>入院日</th><th>目前階段</th><th>願望清單</th><th>護照達成率</th></tr>
+            <tr><td>R-260318</td><td>王○明</td><td>2026/03/18</td><td><span class="pill blue">彈性解鎖期</span></td><td><span class="pill green">已完成</span></td><td>62%</td></tr>
+            <tr><td>R-260402</td><td>陳○華</td><td>2026/04/02</td><td><span class="pill gold">強力期</span></td><td><span class="pill green">已完成</span></td><td>—</td></tr>
+            <tr><td>R-260515</td><td>林○芬</td><td>2026/05/15</td><td><span class="pill gold">強力期</span></td><td><span class="pill red">待蒐集</span></td><td>—</td></tr>
+            <tr><td>R-251220</td><td>張○宗</td><td>2025/12/20</td><td><span class="pill gray">已結案</span></td><td><span class="pill green">已完成</span></td><td>91%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="o-arch">
+      <div class="breadcrumb">計畫總覽 / 整合</div>
+      <div class="page-title">系統整合說明</div>
+      <div class="page-desc">「願望蒐集」與「生活功能解鎖護照」共用同一組帳號、病人主檔與圖卡素材庫。</div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="flow-steps">
+            <div class="flow-step"><div class="n">A</div>共用登入<small>姓名 + 身分證後4碼 / 生日</small></div>
+            <div class="flow-step"><div class="n">B</div>共用病人主檔<small>預留病歷號欄位供 PAC 串接</small></div>
+            <div class="flow-step"><div class="n">C</div>共用圖卡 / 影片素材庫<small>入院願望卡 = 出院衛教素材</small></div>
+            <div class="flow-step"><div class="n">D</div>成果匯出<small>文字摘要 / JSON</small></div>
+          </div>
+          <div class="note">院內未來可能導入 SSO 統一帳號，本版僅預留介面，不實作。資料安全採輕量驗證，不做嚴格病患身分確認。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ========================= 願望蒐集 ========================= -->
+<div class="tabpage" id="page-wish">
+<div class="app">
+  <div class="sidebar">
+    <div class="persona">
+      <div class="role">登入身分</div>
+      <div class="name">護理師（陪同病人操作）</div>
+    </div>
+    <div class="menu-group">
+      <div class="group-title">願望蒐集流程</div>
+      <div class="menu-item active" data-sub="w-start"><span class="ico">①</span>開始 / 身分驗證</div>
+      <div class="menu-item" data-sub="w-explore"><span class="ico">②</span>願望探索</div>
+      <div class="menu-item" data-sub="w-mywish"><span class="ico">③</span>我的願望 <span class="badge" id="basket-badge">0</span></div>
+      <div class="menu-item" data-sub="w-done"><span class="ico">④</span>完成 / 產出清單</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="submenu active" id="w-start">
+      <div class="breadcrumb">願望蒐集 / 開始</div>
+      <div class="page-title">入院願望蒐集</div>
+      <div class="page-desc">護理師於病人入院時陪同操作（家屬在場更佳）。以平板瀏覽圖卡 / 影片，讓病人指出想達成的生活願望。</div>
+      <div class="panel" style="max-width:460px;">
+        <div class="panel-body">
+          <div class="detail" style="grid-template-columns:1fr;">
+            <div class="field"><label>護照持有人姓名</label><input type="text" value="王大明" id="wish-name"></div>
+            <div class="field">
+              <label>驗證方式</label>
+              <div class="radio-row" id="verify-mode">
+                <span class="opt sel">身分證後 4 碼</span><span class="opt">生日</span>
+              </div>
+            </div>
+            <div class="field"><label>驗證值</label><input type="text" placeholder="＊＊＊＊"></div>
+            <div><button class="btn primary" onclick="gotoSub('w-explore')">開始 →</button></div>
+          </div>
+          <div class="note">本版採輕量驗證：姓名 + 身分證後 4 碼 或 生日 擇一。病歷號欄位預留，供日後 PAC 串接。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="w-explore">
+      <div class="breadcrumb">願望蒐集 / 願望探索</div>
+      <div class="page-title">願望探索</div>
+      <div class="page-desc">第一層先點六大分類，才會出現 3×3 圖卡 / 影片牆；點一張卡進入單張大卡填寫。可自由切換、來回瀏覽。<br>
+      <span style="font-size:11.5px;">縮圖暫用 ARASAAC 公開圖庫（CC BY-NC-SA，Sergio Palao / ARASAAC / 阿拉貢政府）示意，正式版將替換為自製插畫或實景照片。</span></div>
+
+      <div class="cat-tabs" id="cat-tabs">
+        <button class="cat-tab active" data-cat="食">食</button>
+        <button class="cat-tab" data-cat="衣">衣</button>
+        <button class="cat-tab" data-cat="住">住</button>
+        <button class="cat-tab" data-cat="行">行</button>
+        <button class="cat-tab" data-cat="育">育</button>
+        <button class="cat-tab" data-cat="樂">樂</button>
+        <button class="btn ghost basket" style="margin-left:auto" onclick="gotoSub('w-mywish')">🧺 我的願望 (<span class="basket-count">0</span>)</button>
+      </div>
+
+      <!-- 第二層：圖卡牆 -->
+      <div id="wall-view">
+        <div class="card-wall" id="card-wall"></div>
+        <div class="wall-pager">
+          <button class="btn ghost" id="wall-prev">‹ 上一頁</button>
+          <span id="wall-page">第 1 / 1 頁</span>
+          <button class="btn ghost" id="wall-next">下一頁 ›</button>
+        </div>
+      </div>
+
+      <!-- 第三層：單張大卡 -->
+      <div id="detail-view" style="display:none;">
+        <button class="btn ghost" onclick="closeDetail()">‹ 返回圖卡牆</button>
+        <div class="panel" style="margin-top:12px;">
+          <div class="panel-body">
+            <div class="detail">
+              <div>
+                <div class="media" id="d-media">🍽️</div>
+              </div>
+              <div>
+                <h4 id="d-title">自己拿筷子吃飯</h4>
+                <button class="btn ghost" style="padding:3px 10px;">🔊 朗讀</button>
+                <p style="font-size:13px;color:var(--text-sub);line-height:1.6;" id="d-desc">
+                  能自己用筷子夾起食物送進嘴裡，不需要別人餵。
+                </p>
+                <div class="field"><label>這對你的意義？（病人自述）</label><input type="text" placeholder="例：回家後可以自己吃晚飯"></div>
+                <div class="field">
+                  <label>重要度（病人選）</label>
+                  <div class="radio-row importance"><span class="opt">非常想</span><span class="opt">想</span><span class="opt">有興趣</span></div>
+                </div>
+                <div class="field"><label>想在什麼情境做到</label><input type="text" placeholder="例：和家人一起圍桌吃飯時"></div>
+                <div class="field">
+                  <label>目前狀況（護理師勾）</label>
+                  <div class="radio-row current"><span class="opt">做不到</span><span class="opt">需要很多幫忙</span><span class="opt">需要一點幫忙</span></div>
+                </div>
+                <div style="margin-top:16px;">
+                  <button class="btn primary" id="d-add">＋ 加入我的願望</button>
+                  <button class="btn ghost" onclick="closeDetail()">略過</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="w-mywish">
+      <div class="breadcrumb">願望蒐集 / 我的願望</div>
+      <div class="page-title">我的願望</div>
+      <div class="page-desc">檢視已加入的願望，排出「最想先達成」的前 3 名，並填寫護理師整體備註。</div>
+      <div class="panel">
+        <div class="panel-head"><h3>已加入清單</h3><span class="tag"><span class="basket-count">0</span> 項</span></div>
+        <div class="panel-body">
+          <table id="mywish-table">
+            <tr><th>#</th><th>類別</th><th>願望</th><th>重要度</th><th>目前狀況</th><th></th></tr>
+          </table>
+          <p id="mywish-empty" style="font-size:13px;color:var(--text-sub);">尚未加入任何願望，請至「願望探索」挑選。</p>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>最想先達成的前 3 名</h3></div>
+          <div class="panel-body">
+            <ol id="top3" style="font-size:13.5px; line-height:2;"><li style="color:var(--text-sub);">（從清單挑選後自動帶入前 3 項）</li></ol>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>護理師觀察備註</h3></div>
+          <div class="panel-body">
+            <div class="field"><label>整體觀察（情緒、認知、溝通狀況等）</label><input type="text" placeholder="選填"></div>
+            <div style="margin-top:12px;"><button class="btn primary" onclick="gotoSub('w-done')">送出，產出願望清單 →</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="w-done">
+      <div class="breadcrumb">願望蒐集 / 完成</div>
+      <div class="page-title">願望清單已產出</div>
+      <div class="page-desc">交給治療師，作為後 3 個月護照闖關的方向依據。</div>
+      <div class="panel" style="max-width:640px;">
+        <div class="panel-head"><h3>願望清單　王大明</h3><span class="pill green">待治療師接手</span></div>
+        <div class="panel-body">
+          <dl class="kv">
+            <dt>蒐集日期</dt><dd>2026-09-03</dd>
+            <dt>蒐集護理師</dt><dd>李護理師</dd>
+            <dt>家屬在場</dt><dd>是（配偶）</dd>
+          </dl>
+          <div class="task-stage-title">最想先達成的前 3 名</div>
+          <ol id="done-top3" style="font-size:13.5px; line-height:2;"><li style="color:var(--text-sub);">（無資料）</li></ol>
+          <div style="margin-top:14px;">
+            <button class="btn">🖨 列印</button>
+            <button class="btn ghost">💾 存檔 (JSON)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ========================= 生活功能解鎖護照 ========================= -->
+<div class="tabpage" id="page-passport">
+<div class="app">
+  <div class="sidebar">
+    <div class="persona">
+      <div class="role">登入身分</div>
+      <div class="name">王大明（護照持有人）</div>
+    </div>
+    <div class="menu-group">
+      <div class="group-title">六大生活能力</div>
+      <div class="menu-item active" data-sub="p-食"><span class="ico">🍽️</span>食：米其林大廚</div>
+      <div class="menu-item" data-sub="p-衣"><span class="ico">👕</span>衣：時尚伸展台</div>
+      <div class="menu-item" data-sub="p-住"><span class="ico">🏠</span>住：住宅改造王</div>
+      <div class="menu-item" data-sub="p-行"><span class="ico">🚶</span>行：拓荒者行動</div>
+      <div class="menu-item" data-sub="p-育"><span class="ico">📖</span>育：知性研究所</div>
+      <div class="menu-item" data-sub="p-樂"><span class="ico">🎣</span>樂：開心農場</div>
+    </div>
+    <div class="menu-group">
+      <div class="group-title">工具</div>
+      <div class="menu-item" data-sub="p-chart"><span class="ico">📊</span>展開圖表</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="submenu active" id="p-食"></div>
+    <div class="submenu" id="p-衣"></div>
+    <div class="submenu" id="p-住"></div>
+    <div class="submenu" id="p-行"></div>
+    <div class="submenu" id="p-育"></div>
+    <div class="submenu" id="p-樂"></div>
+
+    <div class="submenu" id="p-chart">
+      <div class="breadcrumb">生活功能解鎖護照 / 工具</div>
+      <div class="page-title">各階段復健成就進度</div>
+      <div class="page-desc">依已達成任務即時更新（本 Demo 於各分類按「達成」後會反映在下方統計）。</div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>三階獎盃進度</h3></div>
+          <div class="panel-body" id="tier-progress"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>六大生活能力值</h3></div>
+          <div class="panel-body">
+            <div class="radar-wrap"><svg class="radar" id="radar2" viewBox="0 0 200 200"></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========================= 結案成果 ========================= -->
+<div class="tabpage" id="page-result">
+<div class="app">
+  <div class="sidebar">
+    <div class="persona">
+      <div class="role">登入身分</div>
+      <div class="name">醫療團隊</div>
+    </div>
+    <div class="menu-group">
+      <div class="group-title">結案</div>
+      <div class="menu-item active" data-sub="rs-summary"><span class="ico">📈</span>成果總覽</div>
+      <div class="menu-item" data-sub="rs-cert"><span class="ico">🏅</span>榮譽證書</div>
+      <div class="menu-item" data-sub="rs-export"><span class="ico">⇩</span>匯出 / 衛教銜接</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="submenu active" id="rs-summary">
+      <div class="breadcrumb">結案成果 / 總覽</div>
+      <div class="page-title">結案成果總覽　王大明</div>
+      <div class="page-desc">住院 6 個月，恢復生活自理後出院。以下為護照結案時的量化成果（示意）。</div>
+      <div class="grid">
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">總完成率</div><div class="stat-value">78%</div><div class="stat-trend">117 / 150 項</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">銅盃</div><div class="stat-value">13 / 13</div><div class="stat-trend">全數達成</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">銀盃</div><div class="stat-value">5 / 7</div><div class="stat-trend">進階挑戰</div></div>
+        <div class="stat-card"><div class="accent"></div><div class="stat-label">金盃</div><div class="stat-value">2 / 5</div><div class="stat-trend down">真實社會</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>六大生活能力值（雷達圖）</h3></div>
+        <div class="panel-body">
+          <div class="radar-wrap">
+            <svg class="radar" id="radar1" viewBox="0 0 200 200"></svg>
+            <div class="cap-bars" id="cap-bars-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submenu" id="rs-cert">
+      <div class="breadcrumb">結案成果 / 榮譽證書</div>
+      <div class="page-title">榮譽證書</div>
+      <div class="page-desc">可列印，於出院時頒予病人。</div>
+      <div class="cert">
+        <div class="seal">🏅</div>
+        <h3>生活功能解鎖　榮譽證書</h3>
+        <p>茲證明 <b>王大明</b> 於本院住院復健期間</p>
+        <p>完成生活功能解鎖護照 <b>117 / 150</b> 項任務，達成率 <b>78%</b></p>
+        <p>取得 銅盃 ×13、銀盃 ×5、金盃 ×2</p>
+        <p style="margin-top:14px;">員郭醫院　復健治療團隊　2026-09-03</p>
+      </div>
+    </div>
+
+    <div class="submenu" id="rs-export">
+      <div class="breadcrumb">結案成果 / 匯出</div>
+      <div class="page-title">匯出與衛教銜接</div>
+      <div class="page-desc">結案資料可作為治療追蹤，並對衛福部 / 院方證明成效。</div>
+      <div class="panel" style="max-width:560px;">
+        <div class="panel-body">
+          <p style="font-size:13px;">
+            <button class="btn">匯出文字摘要</button>
+            <button class="btn ghost">匯出存檔 (JSON)</button>
+          </p>
+          <div class="note">
+            <b>頭尾呼應：</b>出院衛教包採用與入院願望蒐集相同的一批圖卡 / 影片素材。
+            病人已從入院時「看著別人做」，進步到出院前「自己做到」。
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+/* ---------- 頂層 tab ---------- */
+const tabBtns = document.querySelectorAll('.tab-btn');
+const pages = { overview:'page-overview', wish:'page-wish', passport:'page-passport', result:'page-result' };
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Object.values(pages).forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById(pages[btn.dataset.tab]).classList.add('active');
+  });
+});
+
+/* ---------- 側欄 submenu ---------- */
+document.querySelectorAll('.tabpage').forEach(page=>{
+  const items = page.querySelectorAll('.menu-item[data-sub]');
+  items.forEach(item=>{
+    item.addEventListener('click', ()=>{
+      items.forEach(i=>i.classList.remove('active'));
+      item.classList.add('active');
+      page.querySelectorAll('.submenu').forEach(s=>s.classList.remove('active'));
+      const t = page.querySelector('#' + CSS.escape(item.dataset.sub));
+      if(t) t.classList.add('active');
+    });
+  });
+});
+function gotoSub(subId){
+  const page = document.getElementById('page-wish');
+  page.querySelectorAll('.menu-item[data-sub]').forEach(i=>{
+    i.classList.toggle('active', i.dataset.sub===subId);
+  });
+  page.querySelectorAll('.submenu').forEach(s=>s.classList.toggle('active', s.id===subId));
+  if(subId==='w-mywish') renderMyWish();
+  if(subId==='w-done') renderDone();
+}
+
+/* ---------- 願望蒐集：圖卡資料 ----------
+   縮圖為 ARASAAC 圖庫（授權 CC BY-NC-SA，作者 Sergio Palao / ARASAAC / 阿拉貢政府），
+   正式版可替換為自製插畫或實景照片。pic = ARASAAC pictogram id。ico 為載入失敗時的替代 emoji。 */
+const ARASAAC = id => `img/${id}.png`;
+const WISH_CARDS = {
+  食:[
+    {id:'食-01',t:'自己拿筷子吃飯',ico:'🥢',pic:32090,v:false,d:'能自己用筷子夾起食物送進嘴裡，不需要別人餵。'},
+    {id:'食-02',t:'喝湯不灑出來',ico:'🥣',pic:2573,v:true,d:'能自己端碗或用湯匙喝湯，不灑到衣服桌面。'},
+    {id:'食-03',t:'打開寶特瓶 / 罐頭',ico:'🧴',pic:2288,v:false,d:'能自己轉開瓶蓋或拉開拉環。'},
+    {id:'食-04',t:'用湯匙舀飯菜',ico:'🥄',pic:2362,v:false,d:'能穩定用湯匙舀起飯菜。'},
+    {id:'食-05',t:'剝橘子 / 水果',ico:'🍊',pic:2888,v:false,d:'能單手或雙手配合剝開水果。'},
+    {id:'食-06',t:'夾菜到自己碗裡',ico:'🥬',pic:6456,v:false,d:'能從公盤夾菜到自己碗裡。'},
+    {id:'食-07',t:'自己備一餐',ico:'🍳',pic:30526,v:true,d:'能準備簡單的一餐，如煮麵、微波。'},
+    {id:'食-08',t:'泡一杯茶 / 咖啡',ico:'🍵',pic:29802,v:false,d:'能自己沖泡熱飲。'},
+    {id:'食-09',t:'咬蘋果',ico:'🍎',pic:2462,v:false,d:'能拿起整顆蘋果咬下並咀嚼。'}
+  ],
+  衣:[
+    {id:'衣-01',t:'自己穿上衣',ico:'👕',pic:6627,v:false,d:'能自己套上並整理上衣。'},
+    {id:'衣-02',t:'扣釦子',ico:'🔘',pic:2668,v:false,d:'能扣好襯衫或外套的釦子。'},
+    {id:'衣-03',t:'拉拉鍊',ico:'🧥',pic:2723,v:true,d:'能對準並拉上外套拉鍊。'},
+    {id:'衣-04',t:'穿褲子 / 襪子',ico:'🧦',pic:2298,v:false,d:'能坐姿或站姿穿好褲子與襪子。'},
+    {id:'衣-05',t:'穿鞋、綁鞋帶',ico:'👟',pic:2775,v:false,d:'能自己穿鞋並綁好鞋帶或黏貼。'},
+    {id:'衣-06',t:'挑選當天的衣服',ico:'👗',pic:13640,v:false,d:'能依天氣場合自己挑衣服。'}
+  ],
+  住:[
+    {id:'住-01',t:'自己上下床',ico:'🛏️',pic:5481,v:false,d:'能安全地從床上坐起、下床。'},
+    {id:'住-02',t:'坐到輪椅 / 椅子',ico:'🦽',pic:39072,v:false,d:'能自己完成床椅間轉位。'},
+    {id:'住-03',t:'自己上廁所',ico:'🚽',pic:5921,v:true,d:'能自己如廁並清潔。'},
+    {id:'住-04',t:'洗澡',ico:'🚿',pic:26803,v:false,d:'能在浴室完成洗澡（可用輔具）。'},
+    {id:'住-05',t:'洗臉刷牙',ico:'🪥',pic:34611,v:false,d:'能在洗手台完成盥洗。'},
+    {id:'住-06',t:'梳頭 / 整理儀容',ico:'💇',pic:38120,v:false,d:'能自己梳頭、整理外表。'}
+  ],
+  行:[
+    {id:'行-01',t:'自己走到廁所',ico:'🚶',pic:29951,v:false,d:'能在室內短距離安全行走。'},
+    {id:'行-02',t:'使用助行器行走',ico:'🦯',pic:4641,v:false,d:'能正確使用助行器或拐杖。'},
+    {id:'行-03',t:'走廊來回走動',ico:'🏃',pic:16315,v:true,d:'能在走廊行走一段距離不需人扶。'},
+    {id:'行-04',t:'上下樓梯',ico:'🪜',pic:2379,v:false,d:'能扶扶手上下一層樓梯。'},
+    {id:'行-05',t:'搭車 / 上下車',ico:'🚗',pic:36958,v:false,d:'能自己上下汽車或復康巴士。'},
+    {id:'行-06',t:'過馬路',ico:'🚦',pic:2909,v:false,d:'能在號誌時間內安全通過斑馬線。'}
+  ],
+  育:[
+    {id:'育-01',t:'看書 / 看報',ico:'📰',pic:2845,v:false,d:'能持續閱讀並理解內容。'},
+    {id:'育-02',t:'用手機 / 視訊',ico:'📱',pic:25269,v:true,d:'能操作手機接聽、視訊、傳訊息。'},
+    {id:'育-03',t:'寫字、簽名',ico:'✍️',pic:2380,v:false,d:'能書寫可辨識的文字與簽名。'},
+    {id:'育-04',t:'算錢、買東西',ico:'🪙',pic:8633,v:false,d:'能計算金額、找零並完成購物。'},
+    {id:'育-05',t:'查資料 / 看衛教影片',ico:'🎥',pic:26535,v:true,d:'能自己找到並觀看需要的資訊。'}
+  ],
+  樂:[
+    {id:'樂-01',t:'到公園散步',ico:'🌳',pic:5379,v:false,d:'能到住家附近的公園走走。'},
+    {id:'樂-02',t:'唱歌 / 卡拉OK',ico:'🎤',pic:39235,v:false,d:'能參與唱歌活動。'},
+    {id:'樂-03',t:'下棋、打牌',ico:'♟️',pic:16169,v:false,d:'能和人對弈或打牌。'},
+    {id:'樂-04',t:'種花 / 照顧植物',ico:'🪴',pic:3172,v:true,d:'能澆水、修剪、照顧盆栽。'},
+    {id:'樂-05',t:'看電視 / 聽廣播',ico:'📺',pic:25498,v:false,d:'能操作遙控器選台調整音量。'},
+    {id:'樂-06',t:'拜拜 / 參加聚會',ico:'🕯️',pic:7099,v:false,d:'能參與宗教或家族活動。'}
+  ]
+};
+
+let curCat = '食', curPage = 0, curCard = null;
+const PER_PAGE = 9;
+const basket = []; // {id, cat, t, importance, current}
+
+function renderWall(){
+  const cards = WISH_CARDS[curCat] || [];
+  const pages = Math.max(1, Math.ceil(cards.length / PER_PAGE));
+  if(curPage >= pages) curPage = 0;
+  const slice = cards.slice(curPage*PER_PAGE, curPage*PER_PAGE+PER_PAGE);
+  const wall = document.getElementById('card-wall');
+  wall.innerHTML = slice.map(c=>{
+    const picked = basket.some(b=>b.id===c.id);
+    const thumb = c.pic
+      ? `<img src="${ARASAAC(c.pic)}" alt="${c.t}" onerror="this.replaceWith(document.createTextNode('${c.ico}'))">`
+      : c.ico;
+    return `<div class="wish-card ${picked?'picked':''}" data-id="${c.id}">
+      <div class="thumb">${thumb}${c.v?'<span class="play">▶</span>':''}</div>
+      <div class="cap">${c.t}${picked?'<span class="mark">★ 已加入</span>':''}</div>
+    </div>`;
+  }).join('');
+  wall.querySelectorAll('.wish-card').forEach(el=>{
+    el.addEventListener('click', ()=>openDetail(el.dataset.id));
+  });
+  document.getElementById('wall-page').textContent = `第 ${curPage+1} / ${pages} 頁`;
+  document.getElementById('wall-prev').disabled = curPage===0;
+  document.getElementById('wall-next').disabled = curPage>=pages-1;
+}
+
+document.getElementById('cat-tabs').querySelectorAll('.cat-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('#cat-tabs .cat-tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    curCat = t.dataset.cat; curPage = 0;
+    closeDetail(); renderWall();
+  });
+});
+document.getElementById('wall-prev').addEventListener('click', ()=>{ if(curPage>0){curPage--; renderWall();} });
+document.getElementById('wall-next').addEventListener('click', ()=>{ curPage++; renderWall(); });
+
+function openDetail(id){
+  const c = (WISH_CARDS[curCat]||[]).find(x=>x.id===id);
+  if(!c) return;
+  curCard = c;
+  const media = document.getElementById('d-media');
+  media.innerHTML = c.pic
+    ? `<img src="${ARASAAC(c.pic)}" alt="${c.t}" onerror="this.parentNode.textContent='${c.ico}'">`
+    : c.ico;
+  document.getElementById('d-title').textContent = c.t;
+  document.getElementById('d-desc').textContent = c.d;
+  document.querySelectorAll('#detail-view .radio-row .opt').forEach(o=>o.classList.remove('sel'));
+  document.getElementById('wall-view').style.display='none';
+  document.getElementById('detail-view').style.display='block';
+}
+function closeDetail(){
+  document.getElementById('detail-view').style.display='none';
+  document.getElementById('wall-view').style.display='block';
+  curCard = null;
+}
+document.querySelectorAll('#detail-view .radio-row').forEach(row=>{
+  row.addEventListener('click', e=>{
+    if(!e.target.classList.contains('opt')) return;
+    row.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    e.target.classList.add('sel');
+  });
+});
+document.getElementById('d-add').addEventListener('click', ()=>{
+  if(!curCard) return;
+  if(basket.some(b=>b.id===curCard.id)){ closeDetail(); return; }
+  const imp = document.querySelector('#detail-view .importance .opt.sel');
+  const cur = document.querySelector('#detail-view .current .opt.sel');
+  basket.push({
+    id:curCard.id, cat:curCat, t:curCard.t,
+    importance: imp?imp.textContent:'—',
+    current: cur?cur.textContent:'—'
+  });
+  updateBasketCount();
+  closeDetail();
+  renderWall();
+});
+
+function updateBasketCount(){
+  document.querySelectorAll('.basket-count').forEach(el=>el.textContent = basket.length);
+  document.getElementById('basket-badge').textContent = basket.length;
+}
+
+/* 願望蒐集分類 tab 也放在 explore 頁面，切換時重繪 */
+document.querySelectorAll('#page-wish .menu-item[data-sub]').forEach(mi=>{
+  mi.addEventListener('click', ()=>{
+    if(mi.dataset.sub==='w-explore'){ closeDetail(); renderWall(); }
+    if(mi.dataset.sub==='w-mywish') renderMyWish();
+    if(mi.dataset.sub==='w-done') renderDone();
+  });
+});
+
+function renderMyWish(){
+  const tb = document.getElementById('mywish-table');
+  const empty = document.getElementById('mywish-empty');
+  tb.querySelectorAll('tr:not(:first-child)').forEach(r=>r.remove());
+  if(basket.length===0){ empty.style.display='block'; }
+  else {
+    empty.style.display='none';
+    basket.forEach((b,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${i+1}</td><td>${b.cat}</td><td>${b.t}</td>
+        <td>${b.importance}</td><td>${b.current}</td>
+        <td><span class="btn ghost" data-rm="${b.id}" style="padding:3px 10px;">移除</span></td>`;
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll('[data-rm]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = basket.findIndex(x=>x.id===el.dataset.rm);
+        if(idx>=0) basket.splice(idx,1);
+        updateBasketCount(); renderMyWish(); renderWall();
+      });
+    });
+  }
+  const top3 = document.getElementById('top3');
+  if(basket.length===0){ top3.innerHTML = '<li style="color:var(--text-sub);">（從清單挑選後自動帶入前 3 項）</li>'; }
+  else { top3.innerHTML = basket.slice(0,3).map(b=>`<li>${b.cat}：${b.t}</li>`).join(''); }
+}
+function renderDone(){
+  const el = document.getElementById('done-top3');
+  if(basket.length===0){ el.innerHTML = '<li style="color:var(--text-sub);">（無資料）</li>'; }
+  else { el.innerHTML = basket.slice(0,3).map(b=>`<li>${b.cat}：${b.t}</li>`).join(''); }
+}
+
+/* ---------- 護照：任務資料 ---------- */
+const PASSPORT = {
+  食:{name:'食：米其林大廚', ico:'🍽️', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：餐具主控權', tasks:[
+        {i:'🥇',n:'黃金左手/右手',d:'能獨立用健側手拿湯匙舀起固體食物送進嘴裡，中途不掉落。'},
+        {i:'🥣',n:'完美湯料理',d:'舀湯至 7 分滿，連續 5 口送進嘴裡，湯汁不溢出。'},
+        {i:'🥢',n:'夾起新希望',d:'使用筷子或學習筷，成功夾起 5 塊小餅乾或切塊水果。'}
+      ]},
+      {s:'階段 B：容器與包裝對抗', tasks:[
+        {i:'🥤',n:'吸管神射手',d:'用患側手固定飲料杯，健側手將吸管準確插入利樂包。'},
+        {i:'🍪',n:'點心時間',d:'雙手協調撕開餅乾包裝袋，不撒得到處都是。'},
+        {i:'🧴',n:'寶特瓶解鎖',d:'利用止滑墊或患側手固定瓶身，健側手轉開全新瓶蓋。'}
+      ]},
+      {s:'階段 C：餐後與日常清潔', tasks:[
+        {i:'🧻',n:'優雅擦嘴',d:'單手抽取衛生紙，準確擦拭嘴角髒污。'},
+        {i:'🪥',n:'潔牙儀式',d:'坐姿下在牙刷擠出牙膏並完成刷牙。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[
+      {s:'進階挑戰', tasks:[
+        {i:'🍳',n:'我的一餐我作主',d:'獨立完成煎蛋或煮麵一份。'},
+        {i:'🛒',n:'採買小旅行',d:'到便利商店買齊三樣指定食材並結帳。'}
+      ]}
+    ]},
+    gold:{label:'金盃', sub:'真實社會', stages:[
+      {s:'真實社會', tasks:[
+        {i:'🍲',n:'家庭餐桌',d:'為家人準備一桌兩菜一湯。'}
+      ]}
+    ]}
+  }},
+  衣:{name:'衣：時尚伸展台', ico:'👕', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：穿脫基礎', tasks:[
+        {i:'👕',n:'上衣達人',d:'坐姿下自己套上並整理套頭上衣。'},
+        {i:'🔘',n:'釦子任務',d:'扣好至少 4 顆襯衫釦子。'},
+        {i:'🧥',n:'拉鍊對位',d:'對準並拉上外套拉鍊。'}
+      ]},
+      {s:'階段 B：下半身', tasks:[
+        {i:'🧦',n:'襪子攻略',d:'坐姿下穿好雙腳襪子。'},
+        {i:'👖',n:'褲子站姿挑戰',d:'扶support下站姿提起褲子。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[{s:'進階挑戰',tasks:[
+      {i:'👟',n:'綁鞋帶',d:'完成鞋帶蝴蝶結。'}
+    ]}]},
+    gold:{label:'金盃', sub:'真實社會', stages:[{s:'真實社會',tasks:[
+      {i:'🛍️',n:'自己買衣服',d:'到店家試穿並購買一件合身衣物。'}
+    ]}]}
+  }},
+  住:{name:'住：住宅改造王', ico:'🏠', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：轉位', tasks:[
+        {i:'🛏️',n:'起床儀式',d:'安全從躺姿坐起、雙腳著地。'},
+        {i:'🦽',n:'床椅轉位',d:'完成床到輪椅的轉位 5 次。'}
+      ]},
+      {s:'階段 B：盥洗如廁', tasks:[
+        {i:'🚽',n:'如廁自主',d:'獨立完成如廁與清潔。'},
+        {i:'🪥',n:'洗手台任務',d:'站姿或坐姿完成洗臉刷牙。'},
+        {i:'🚿',n:'沐浴挑戰',d:'使用洗澡椅完成淋浴。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[{s:'進階挑戰',tasks:[
+      {i:'🧹',n:'居家整理',d:'完成擦桌、摺衣等家事各一項。'}
+    ]}]},
+    gold:{label:'金盃', sub:'真實社會', stages:[{s:'真實社會',tasks:[
+      {i:'🔧',n:'居家安全改造',d:'與職能治療師檢視居家並列出改造清單。'}
+    ]}]}
+  }},
+  行:{name:'行：拓荒者行動', ico:'🚶', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：室內行走', tasks:[
+        {i:'🚶',n:'房間到廁所',d:'室內短距離安全行走不需人扶。'},
+        {i:'🦯',n:'輔具使用',d:'正確使用助行器/拐杖行走 10 公尺。'}
+      ]},
+      {s:'階段 B：進階移位', tasks:[
+        {i:'🪜',n:'樓梯挑戰',d:'扶扶手上下一層樓梯。'},
+        {i:'🏃',n:'走廊耐力',d:'連續行走 50 公尺休息不超過一次。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[{s:'進階挑戰',tasks:[
+      {i:'🚗',n:'上下車',d:'自己上下汽車或復康巴士。'}
+    ]}]},
+    gold:{label:'金盃', sub:'真實社會', stages:[{s:'真實社會',tasks:[
+      {i:'🚦',n:'社區行走',d:'在號誌時間內安全過馬路並走到指定地點。'}
+    ]}]}
+  }},
+  育:{name:'育：知性研究所', ico:'📖', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：認知與溝通', tasks:[
+        {i:'📰',n:'閱讀理解',d:'讀完一篇短文並回答 3 個問題。'},
+        {i:'✍️',n:'書寫簽名',d:'書寫可辨識的姓名與日期。'}
+      ]},
+      {s:'階段 B：生活運算', tasks:[
+        {i:'🪙',n:'金錢計算',d:'正確計算找零並點清金額。'},
+        {i:'📱',n:'手機操作',d:'完成撥打電話、傳一則訊息。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[{s:'進階挑戰',tasks:[
+      {i:'🗓️',n:'行程管理',d:'用行事曆記錄並提醒回診時間。'}
+    ]}]},
+    gold:{label:'金盃', sub:'真實社會', stages:[{s:'真實社會',tasks:[
+      {i:'🏦',n:'臨櫃辦事',d:'到銀行或郵局完成一項臨櫃業務。'}
+    ]}]}
+  }},
+  樂:{name:'樂：開心農場', ico:'🎣', tiers:{
+    bronze:{label:'銅盃', sub:'階段目標', stages:[
+      {s:'階段 A：病房參與', tasks:[
+        {i:'🎲',n:'團體活動',d:'參加病房團體活動一次並完成互動。'},
+        {i:'🪴',n:'植物照顧',d:'連續 3 天為盆栽澆水。'}
+      ]},
+      {s:'階段 B：休閒技能', tasks:[
+        {i:'♟️',n:'桌遊對弈',d:'完成一局象棋或撲克牌。'},
+        {i:'📺',n:'遙控器達人',d:'獨立選台、調整音量與輸入源。'}
+      ]}
+    ]},
+    silver:{label:'銀盃', sub:'進階挑戰', stages:[{s:'進階挑戰',tasks:[
+      {i:'🎤',n:'才藝演出',d:'在活動中表演一首歌或一段才藝。'}
+    ]}]},
+    gold:{label:'金盃', sub:'真實社會', stages:[{s:'真實社會',tasks:[
+      {i:'🌳',n:'社區出遊',d:'和家人到公園或市場進行一次戶外活動。'}
+    ]}]}
+  }}
+};
+const PARTNERS = ['自己完成','家屬陪伴','照顧服務員','醫療團隊'];
+const doneState = {}; // key `${cat}|${tier}|${stageIdx}|${taskIdx}` -> partner
+
+function passportKey(cat,tier,si,ti){return `${cat}|${tier}|${si}|${ti}`;}
+
+function renderPassportCat(cat){
+  const box = document.getElementById('p-'+cat);
+  const P = PASSPORT[cat];
+  const tierOrder = [['bronze','🥉'],['silver','🥈'],['gold','🥇']];
+  const activeTier = box.dataset.tier || 'bronze';
+
+  const counts = {};
+  tierOrder.forEach(([tk])=>{
+    const t = P.tiers[tk];
+    let total=0, done=0;
+    t.stages.forEach((st,si)=>st.tasks.forEach((tsk,ti)=>{
+      total++; if(doneState[passportKey(cat,tk,si,ti)]) done++;
+    }));
+    counts[tk] = {total,done};
+  });
+
+  let html = `<div class="breadcrumb">生活功能解鎖護照 / ${P.name}</div>
+    <div class="page-title">${P.ico} ${P.name}</div>
+    <div class="page-desc">從基礎到真實社會，依病況與階段彈性選關。完成任務時選「共學夥伴」再按「達成」。</div>
+    <div class="tier-nav">`;
+  tierOrder.forEach(([tk,medal])=>{
+    const c = counts[tk];
+    html += `<button class="tier-btn ${tk===activeTier?'active':''}" data-tier="${tk}">
+      <span class="medal">${medal}</span>
+      <span>${P.tiers[tk].label}<small>${P.tiers[tk].sub} • ${c.done}/${c.total}</small></span>
+    </button>`;
+  });
+  html += `</div>`;
+
+  const tier = P.tiers[activeTier];
+  tier.stages.forEach((st,si)=>{
+    html += `<div class="task-stage-title">${st.s}</div>`;
+    st.tasks.forEach((tsk,ti)=>{
+      const key = passportKey(cat,activeTier,si,ti);
+      const partner = doneState[key];
+      const isDone = !!partner;
+      html += `<div class="task-item ${isDone?'done':''}" data-key="${key}">
+        <div class="tk-ico">${tsk.i}</div>
+        <div class="tk-body">
+          <h5>${tsk.n}</h5>
+          <p>${tsk.d}</p>
+          <div class="tk-partner">
+            <span class="lbl">共學夥伴：</span>
+            ${PARTNERS.map(p=>`<span class="p ${partner===p?'sel':''}" data-p="${p}">${p}</span>`).join('')}
+          </div>
+        </div>
+        <button class="tk-done">${isDone?'✓ 已達成':'達成'}</button>
+      </div>`;
+    });
+  });
+
+  box.innerHTML = html;
+
+  box.querySelectorAll('.tier-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{ box.dataset.tier = b.dataset.tier; renderPassportCat(cat); });
+  });
+  box.querySelectorAll('.task-item').forEach(item=>{
+    const key = item.dataset.key;
+    item.querySelectorAll('.tk-partner .p').forEach(p=>{
+      p.addEventListener('click', ()=>{
+        item.querySelectorAll('.tk-partner .p').forEach(x=>x.classList.remove('sel'));
+        p.classList.add('sel');
+        item.dataset.pendingPartner = p.dataset.p;
+      });
+    });
+    item.querySelector('.tk-done').addEventListener('click', ()=>{
+      if(doneState[key]){ delete doneState[key]; }
+      else {
+        const chosen = item.dataset.pendingPartner
+          || (item.querySelector('.tk-partner .p.sel')?.dataset.p)
+          || '自己完成';
+        doneState[key] = chosen;
+      }
+      renderPassportCat(cat);
+      renderTierProgress();
+      drawRadar('radar2', capValues());
+    });
+  });
+}
+
+['食','衣','住','行','育','樂'].forEach(renderPassportCat);
+
+document.querySelectorAll('#page-passport .menu-item[data-sub]').forEach(mi=>{
+  mi.addEventListener('click', ()=>{
+    const sub = mi.dataset.sub;
+    if(sub.startsWith('p-') && sub!=='p-chart') renderPassportCat(sub.slice(2));
+    if(sub==='p-chart'){ renderTierProgress(); drawRadar('radar2', capValues()); }
+  });
+});
+
+/* ---------- 統計 ---------- */
+function capValues(){
+  // 每類：已達成任務數 / 該類任務總數 -> 0..100
+  const cats = ['食','衣','住','行','育','樂'];
+  return cats.map(cat=>{
+    const P = PASSPORT[cat];
+    let total=0, done=0;
+    ['bronze','silver','gold'].forEach(tk=>{
+      P.tiers[tk].stages.forEach((st,si)=>st.tasks.forEach((tsk,ti)=>{
+        total++; if(doneState[passportKey(cat,tk,si,ti)]) done++;
+      }));
+    });
+    return total? Math.round(done/total*100) : 0;
+  });
+}
+function renderTierProgress(){
+  const el = document.getElementById('tier-progress');
+  if(!el) return;
+  const tiers=[['bronze','🥉 銅盃'],['silver','🥈 銀盃'],['gold','🥇 金盃']];
+  let total={bronze:[0,0],silver:[0,0],gold:[0,0]};
+  ['食','衣','住','行','育','樂'].forEach(cat=>{
+    ['bronze','silver','gold'].forEach(tk=>{
+      PASSPORT[cat].tiers[tk].stages.forEach((st,si)=>st.tasks.forEach((tsk,ti)=>{
+        total[tk][1]++; if(doneState[passportKey(cat,tk,si,ti)]) total[tk][0]++;
+      }));
+    });
+  });
+  el.innerHTML = tiers.map(([tk,label])=>{
+    const [d,t]=total[tk]; const pct = t? Math.round(d/t*100):0;
+    return `<div class="cap-bar-row"><div class="name" style="width:64px">${label}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${d}/${t}</div></div>`;
+  }).join('');
+}
+
+/* ---------- 雷達圖 ---------- */
+function drawRadar(svgId, values){
+  const svg = document.getElementById(svgId);
+  if(!svg) return;
+  const cx=100, cy=100, R=72, N=values.length;
+  const labels=['食','衣','住','行','育','樂'];
+  let g='';
+  // grid rings
+  [0.25,0.5,0.75,1].forEach(r=>{
+    let pts='';
+    for(let i=0;i<N;i++){
+      const a=-Math.PI/2 + i*2*Math.PI/N;
+      pts += `${cx+Math.cos(a)*R*r},${cy+Math.sin(a)*R*r} `;
+    }
+    g+=`<polygon points="${pts}" fill="none" stroke="#dde6e5" stroke-width="1"/>`;
+  });
+  // axes + labels
+  for(let i=0;i<N;i++){
+    const a=-Math.PI/2 + i*2*Math.PI/N;
+    const x=cx+Math.cos(a)*R, y=cy+Math.sin(a)*R;
+    g+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#dde6e5"/>`;
+    g+=`<text x="${cx+Math.cos(a)*(R+14)}" y="${cy+Math.sin(a)*(R+14)+4}" font-size="11" text-anchor="middle" fill="#5c7377">${labels[i]}</text>`;
+  }
+  // data polygon
+  let pts='';
+  for(let i=0;i<N;i++){
+    const a=-Math.PI/2 + i*2*Math.PI/N;
+    const rr = R*(values[i]/100);
+    pts += `${cx+Math.cos(a)*rr},${cy+Math.sin(a)*rr} `;
+  }
+  g+=`<polygon points="${pts}" fill="rgba(47,111,107,.28)" stroke="#2f6f6b" stroke-width="2"/>`;
+  svg.innerHTML=g;
+}
+
+/* 結案頁固定示意數值 */
+const RESULT_CAPS = [88, 72, 80, 65, 78, 60];
+function renderResultBars(){
+  const el = document.getElementById('cap-bars-result');
+  const labels=['食','衣','住','行','育','樂'];
+  el.innerHTML = labels.map((l,i)=>`
+    <div class="cap-bar-row"><div class="name">${l}</div>
+      <div class="track"><div class="fill" style="width:${RESULT_CAPS[i]}%"></div></div>
+      <div class="val">${RESULT_CAPS[i]}</div></div>`).join('');
+}
+renderResultBars();
+drawRadar('radar1', RESULT_CAPS);
+
+updateBasketCount();
+renderWall();
+renderTierProgress();
+</script>
+
+</body>
+</html>

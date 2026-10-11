@@ -1,0 +1,87 @@
+  // Load unlocked badges
+  useEffect(() => {
+    const saved = localStorage.getItem('passport_unlocked_badges');
+    if (saved) {
+      try {
+        setUnlockedBadges(JSON.parse(saved));
+      } catch (e) {}
+    }
+  }, []);
+
+  // Update unlocked badges based on completedTasks
+  useEffect(() => {
+    if (!isLoaded) return;
+    setUnlockedBadges(prev => {
+      let changed = false;
+      const next = { ...prev };
+      
+      BADGES.forEach(badge => {
+        if (!next[badge.id]) {
+          let isUnlocked = false;
+          if (badge.id === 'first_step') {
+            isUnlocked = completedTasks.size > 0;
+          } else if (badge.id === 'rehab_star') {
+            isUnlocked = completedTasks.size >= 10;
+          } else if (badge.id === 'grand_slam') {
+            isUnlocked = completedTasks.size === 150;
+          } else {
+            const categories: Category[] = ['食', '衣', '住', '行', '育', '樂'];
+            isUnlocked = categories.some(cat => {
+              const catTasks = TASKS.filter(t => t.category === cat);
+              if (badge.id === 'bronze_master') {
+                const tierTasks = catTasks.filter(t => t.tier === 'bronze');
+                return tierTasks.length > 0 && tierTasks.every(t => completedTasks.has(t.id));
+              }
+              if (badge.id === 'silver_master') {
+                const tierTasks = catTasks.filter(t => t.tier === 'silver');
+                return tierTasks.length > 0 && tierTasks.every(t => completedTasks.has(t.id));
+              }
+              if (badge.id === 'gold_master') {
+                const tierTasks = catTasks.filter(t => t.tier === 'gold');
+                return tierTasks.length > 0 && tierTasks.every(t => completedTasks.has(t.id));
+              }
+              return false;
+            });
+          }
+          
+          if (isUnlocked) {
+            next[badge.id] = new Date().toISOString();
+            changed = true;
+          }
+        }
+      });
+      
+      if (changed) {
+        localStorage.setItem('passport_unlocked_badges', JSON.stringify(next));
+        return next;
+      }
+      return prev;
+    });
+  }, [completedTasks, isLoaded]);
+
+  const handleShareBadge = async (badge: typeof BADGES[0], dateStr: string) => {
+    setShareData({
+      name: badge.name,
+      icon: badge.icon,
+      date: dateStr,
+      desc: badge.description
+    });
+    
+    // Wait for React to render the hidden card
+    setTimeout(async () => {
+      if (shareCardRef.current) {
+        try {
+          const canvas = await html2canvas(shareCardRef.current, { backgroundColor: null, scale: 2 });
+          const dataUrl = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = `成就達成_${badge.name}.png`;
+          a.click();
+          setShareData(null);
+        } catch (e) {
+          console.error("Generate image failed", e);
+          setShareData(null);
+        }
+      }
+    }, 100);
+  };

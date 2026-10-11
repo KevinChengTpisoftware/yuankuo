@@ -1,0 +1,73 @@
+- generic [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - generic [ref=f10e3]:
+      - generic [ref=f10e4]: 員郭
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]: 個別化照顧計畫平台
+        - generic [ref=f10e7]: 住院復健 × 生活功能解鎖 整合展示 Demo
+    - generic [ref=f10e8]:
+      - button "計畫總覽" [ref=f10e9] [cursor=pointer]: 計畫總覽
+      - button "願望蒐集" [ref=f10e11] [cursor=pointer]: 願望蒐集
+      - button "生活功能解鎖護照" [ref=f10e13] [cursor=pointer]: 生活功能解鎖護照
+      - button "結案成果" [ref=f10e15] [cursor=pointer]: 結案成果
+    - generic [ref=f10e17]: DEMO 展示環境（示意資料）
+  - generic [ref=f10e106]:
+    - generic [ref=f10e107]:
+      - generic [ref=f10e108]:
+        - generic [ref=f10e109]: 登入身分
+        - generic [ref=f10e110]: 護理師（陪同病人操作）
+      - generic [ref=f10e111]:
+        - generic [ref=f10e112]: 願望蒐集流程
+        - generic [ref=f10e113] [cursor=pointer]:
+          - generic [ref=f10e114]: ①
+          - text: 開始 / 身分驗證
+        - generic [ref=f10e115] [cursor=pointer]:
+          - generic [ref=f10e116]: ②
+          - text: 願望探索
+        - generic [ref=f10e117] [cursor=pointer]:
+          - generic [ref=f10e118]: ③
+          - text: 我的願望
+          - generic [ref=f10e119]: "0"
+        - generic [ref=f10e120] [cursor=pointer]:
+          - generic [ref=f10e121]: ④
+          - text: 完成 / 產出清單
+    - generic [ref=f10e144]:
+      - generic [ref=f10e145]: 願望蒐集 / 願望探索
+      - generic [ref=f10e146]: 願望探索
+      - generic [ref=f10e147]:
+        - text: 第一層先點六大分類，才會出現 3×3 圖卡 / 影片牆；點一張卡進入單張大卡填寫。可自由切換、來回瀏覽。
+        - text: 縮圖暫用 ARASAAC 公開圖庫（CC BY-NC-SA，Sergio Palao / ARASAAC / 阿拉貢政府）示意，正式版將替換為自製插畫或實景照片。
+      - generic [ref=f10e148]:
+        - button "食" [ref=f10e149] [cursor=pointer]
+        - button "衣" [ref=f10e150] [cursor=pointer]
+        - button "住" [active] [ref=f10e151] [cursor=pointer]
+        - button "行" [ref=f10e152] [cursor=pointer]
+        - button "育" [ref=f10e153] [cursor=pointer]
+        - button "樂" [ref=f10e154] [cursor=pointer]
+        - button "🧺 我的願望 (0)" [ref=f10e155] [cursor=pointer]
+      - generic [ref=f10e156]:
+        - generic [ref=f10e157]:
+          - generic [ref=f10e225] [cursor=pointer]:
+            - img "自己上下床" [ref=f10e227]
+            - generic [ref=f10e228]: 自己上下床
+          - generic [ref=f10e229] [cursor=pointer]:
+            - img "坐到輪椅 / 椅子" [ref=f10e231]
+            - generic [ref=f10e232]: 坐到輪椅 / 椅子
+          - generic [ref=f10e233] [cursor=pointer]:
+            - generic [ref=f10e234]:
+              - img "自己上廁所" [ref=f10e235]
+              - generic [ref=f10e236]: ▶
+            - generic [ref=f10e237]: 自己上廁所
+          - generic [ref=f10e238] [cursor=pointer]:
+            - img "洗澡" [ref=f10e240]
+            - generic [ref=f10e241]: 洗澡
+          - generic [ref=f10e242] [cursor=pointer]:
+            - img "洗臉刷牙" [ref=f10e244]
+            - generic [ref=f10e245]: 洗臉刷牙
+          - generic [ref=f10e246] [cursor=pointer]:
+            - img "梳頭 / 整理儀容" [ref=f10e248]
+            - generic [ref=f10e249]: 梳頭 / 整理儀容
+        - generic [ref=f10e196]:
+          - button "‹ 上一頁" [disabled] [ref=f10e197]
+          - generic [ref=f10e198]: 第 1 / 1 頁
+          - button "下一頁 ›" [disabled] [ref=f10e199]

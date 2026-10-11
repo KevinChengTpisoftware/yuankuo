@@ -1,0 +1,52 @@
+- generic [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - generic [ref=f10e3]:
+      - generic [ref=f10e4]: 員郭
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]: 個別化照顧計畫平台
+        - generic [ref=f10e7]: 住院復健 × 生活功能解鎖 整合展示 Demo
+    - generic [ref=f10e8]:
+      - button "計畫總覽" [ref=f10e9] [cursor=pointer]: 計畫總覽
+      - button "願望蒐集" [active] [ref=f10e11] [cursor=pointer]: 願望蒐集
+      - button "生活功能解鎖護照" [ref=f10e13] [cursor=pointer]: 生活功能解鎖護照
+      - button "結案成果" [ref=f10e15] [cursor=pointer]: 結案成果
+    - generic [ref=f10e17]: DEMO 展示環境（示意資料）
+  - generic [ref=f10e106]:
+    - generic [ref=f10e107]:
+      - generic [ref=f10e108]:
+        - generic [ref=f10e109]: 登入身分
+        - generic [ref=f10e110]: 護理師（陪同病人操作）
+      - generic [ref=f10e111]:
+        - generic [ref=f10e112]: 願望蒐集流程
+        - generic [ref=f10e113] [cursor=pointer]:
+          - generic [ref=f10e114]: ①
+          - text: 開始 / 身分驗證
+        - generic [ref=f10e115] [cursor=pointer]:
+          - generic [ref=f10e116]: ②
+          - text: 願望探索
+        - generic [ref=f10e117] [cursor=pointer]:
+          - generic [ref=f10e118]: ③
+          - text: 我的願望
+          - generic [ref=f10e119]: "0"
+        - generic [ref=f10e120] [cursor=pointer]:
+          - generic [ref=f10e121]: ④
+          - text: 完成 / 產出清單
+    - generic [ref=f10e123]:
+      - generic [ref=f10e124]: 願望蒐集 / 開始
+      - generic [ref=f10e125]: 入院願望蒐集
+      - generic [ref=f10e126]: 護理師於病人入院時陪同操作（家屬在場更佳）。以平板瀏覽圖卡 / 影片，讓病人指出想達成的生活願望。
+      - generic [ref=f10e128]:
+        - generic [ref=f10e129]:
+          - generic [ref=f10e130]:
+            - generic [ref=f10e131]: 護照持有人姓名
+            - textbox [ref=f10e132]: 王大明
+          - generic [ref=f10e133]:
+            - generic [ref=f10e134]: 驗證方式
+            - generic [ref=f10e135]:
+              - generic [ref=f10e136] [cursor=pointer]: 身分證後 4 碼
+              - generic [ref=f10e137] [cursor=pointer]: 生日
+          - generic [ref=f10e138]:
+            - generic [ref=f10e139]: 驗證值
+            - textbox "＊＊＊＊" [ref=f10e140]
+          - button "開始 →" [ref=f10e142] [cursor=pointer]
+        - generic [ref=f10e143]: 本版採輕量驗證：姓名 + 身分證後 4 碼 或 生日 擇一。病歷號欄位預留，供日後 PAC 串接。

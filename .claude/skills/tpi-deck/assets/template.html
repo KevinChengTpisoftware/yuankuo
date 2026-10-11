@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{DECK_TITLE}}</title>
+<style>
+  /* ============================================================
+     THEME — set these to the CLIENT's primary colour system.
+     Only --brand / --brand-dark / --brand-light / --accent
+     normally need changing per client.
+     ============================================================ */
+  :root{
+    --brand:#006582;          /* client primary (titles, bullets, tags) */
+    --brand-dark:#004f66;      /* darker shade (headings, cover gradient) */
+    --brand-light:#e6f1f4;     /* pale tint (table header) */
+    --accent:#3aa757;          /* sub-title bar + progress-bar fill */
+    --vendor-accent:#6a3fa6;   /* vendor (昕力紫) — used only on the cover */
+    --ink:#1f2937;
+    --sub:#5c7377;
+    --line:#dbe4e4;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:#20303a;
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+
+  /* ===== Stage: native 1920x1080 canvas, anchored top-left, contained ===== */
+  #stage{position:fixed;inset:0;overflow:hidden;}
+  #deck{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;}
+  .slide{
+    position:absolute;inset:0;background:#fff;
+    padding:70px 104px 150px 104px;
+    display:none;flex-direction:column;
+  }
+  .slide.active{display:flex;}
+
+  /* ===== Slide header ===== */
+  .s-kicker{font-size:24px;letter-spacing:4px;color:var(--brand);font-weight:700;margin-bottom:14px;}
+  .s-title{font-size:66px;line-height:1.14;font-weight:800;color:var(--brand-dark);letter-spacing:1px;}
+  .s-title.small{font-size:52px;}
+  .s-sub{
+    margin-top:26px;font-size:32px;line-height:1.45;color:var(--ink);font-weight:600;
+    border-left:9px solid var(--accent);padding-left:24px;
+  }
+
+  .s-body{margin-top:46px;flex:1;min-height:0;display:flex;flex-direction:column;}
+
+  /* points: each bullet is a full-width row that stretches to fill height */
+  ul.points{list-style:none;flex:1;display:flex;flex-direction:column;}
+  ul.points > li{
+    flex:1;display:grid;grid-template-columns:20px 1fr;column-gap:26px;
+    align-content:center;align-items:start;
+    padding:24px 6px;border-bottom:2px solid var(--line);
+  }
+  ul.points > li:last-child{border-bottom:0;}
+  ul.points > li .mk{width:20px;height:20px;border-radius:5px;background:var(--brand);margin-top:11px;}
+  ul.points > li .tx{font-size:30px;line-height:1.5;color:var(--ink);}
+  ul.points b{color:var(--brand-dark);}
+
+  .s-note{margin-top:14px;font-size:17px;line-height:1.5;color:var(--sub);}
+  /* Optional presenter cue for the next slide, pinned above the footer. */
+  .s-next-hint{
+    position:absolute;right:44px;bottom:58px;
+    font-size:17px;line-height:1.4;
+    color:var(--sub);opacity:.65;
+    letter-spacing:.5px;
+  }
+
+  /* table: fills width and height, rows share the space evenly */
+  table.grid{width:100%;height:100%;border-collapse:collapse;font-size:27px;}
+  table.grid th,table.grid td{border:1px solid var(--line);padding:18px 26px;text-align:left;vertical-align:middle;}
+  table.grid th{background:var(--brand-light);color:var(--brand-dark);font-weight:700;font-size:26px;}
+  table.grid td.n{text-align:center;font-weight:800;color:var(--brand);white-space:nowrap;font-size:30px;}
+
+  /* multi-screenshot grid (2x2) */
+  .shots{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:28px 32px;}
+  .shots figure{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f2f6f6;min-height:0;}
+  .shots img{flex:1;width:100%;min-height:0;object-fit:cover;object-position:top left;display:block;}
+  .shots figcaption{flex:none;font-size:20px;line-height:1.4;padding:14px 18px;color:var(--sub);background:#fff;border-top:1px solid var(--line);}
+
+  /* single screenshot / diagram — image hugs its own size, no empty frame */
+  .shot-one{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin-top:8px;}
+  .shot-one img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.12);}
+
+  /* media slides: trim chrome so the image gets the most possible area */
+  .slide--media{padding:50px 60px 82px 60px;}
+  .slide--media .s-title,.slide--media .s-title.small{font-size:40px;}
+  .slide--media .s-kicker{margin-bottom:8px;}
+  .slide--media .s-sub{font-size:22px;margin-top:12px;line-height:1.4;}
+  .slide--media .s-body{margin-top:14px;}
+  .slide--media .s-foot{bottom:56px;}
+  /* bare media slide: image is self-titled — keep only the kicker as a progress marker */
+  .slide--bare{padding:36px 44px 74px 44px;}
+  .slide--bare .s-kicker{margin-bottom:0;}
+  .slide--bare .s-body{margin-top:8px;}
+
+  /* video slide (16:9) — poster + play button; plays inline over http, opens YouTube over file:// */
+  .video-wrap{flex:1;min-height:0;margin-top:8px;display:flex;align-items:center;justify-content:center;}
+  .video-box{position:relative;height:100%;aspect-ratio:16/9;max-width:100%;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.16);background:#000;cursor:pointer;}
+  .video-box .vposter{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .video-box .vplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:84px;border-radius:18px;background:rgba(220,30,30,.92);transition:background .15s;}
+  .video-box:hover .vplay{background:#e60000;}
+  .video-box .vplay::after{content:"";position:absolute;top:50%;left:52%;transform:translate(-50%,-50%);width:0;height:0;border-style:solid;border-width:18px 0 18px 30px;border-color:transparent transparent transparent #fff;}
+  .video-box .vcap{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;padding:12px 20px;font-size:20px;letter-spacing:.5px;text-align:left;}
+  .video-box.playing{cursor:default;}
+  .video-box.playing .vposter,.video-box.playing .vplay,.video-box.playing .vcap{display:none;}
+  .video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+  /* ===== Cover ===== */
+  .slide.cover{
+    background:linear-gradient(118deg,#2b2350 0%,var(--brand-dark) 46%,var(--brand) 100%);
+    color:#fff;justify-content:center;padding:120px 130px 150px 130px;
+  }
+  .slide.cover .cover-logos{position:absolute;top:70px;left:130px;right:130px;display:flex;align-items:center;justify-content:space-between;}
+  .slide.cover .cover-logos .client{height:104px;width:auto;display:block;}
+  .slide.cover .cover-logos .vendor{height:36px;width:auto;display:block;filter:brightness(0) invert(1);opacity:.8;}
+  /* single-logo cover: one mark, upper-left, white */
+  .slide.cover .cover-logos--one{justify-content:flex-start;}
+  .slide.cover .cover-logos--one .client{height:44px;filter:brightness(0) invert(1);opacity:.92;}
+  .slide.cover .s-title{color:#fff;font-size:62px;line-height:1.24;margin-top:8px;}
+  .slide.cover .s-title .dt{display:block;margin-top:16px;font-size:46px;font-weight:600;letter-spacing:8px;color:#e6eefc;}
+  .slide.cover .s-sub{color:#eafcff;border-left-color:#8fe0a0;font-size:36px;}
+  .slide.cover .cover-meta{margin-top:64px;display:flex;flex-direction:column;gap:22px;font-size:27px;line-height:1.4;color:#eafcff;}
+  .slide.cover .cover-meta span b{color:#fff;}
+  .slide.cover .cover-meta .date{margin-top:16px;font-size:24px;color:#cddcea;letter-spacing:1px;}
+
+  /* ===== Footer (inside slide) ===== */
+  /* on screen: pinned flush above the progress bar (JS keeps #chapters at the slide's bottom edge).
+     @media print overrides bottom back to 66px so it clears the static chapter bar in the PDF. */
+  .s-foot{
+    position:absolute;left:0;right:0;bottom:6px;height:46px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;border-top:1px solid var(--line);
+    font-size:24px;font-weight:600;color:#3f4a4d;
+  }
+  .slide.cover .s-foot{border-top-color:rgba(255,255,255,.3);color:#eef8fa;}
+
+  /* corner vendor logo, page 2 onward */
+  .deck-logo{position:absolute;top:34px;right:40px;height:23px;width:auto;opacity:.5;z-index:3;pointer-events:none;}
+
+  /* ===== HUD (on-screen bottom bar) ===== */
+  #hud{
+    position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:14px;
+    padding:3px 9px;background:rgba(0,0,0,.4);font-size:12px;color:#dfeaea;line-height:1;user-select:none;
+  }
+  #hud button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:5px;padding:3px 10px;cursor:pointer;font-size:12px;line-height:1;}
+  #hud .hint{opacity:.7;}
+
+  /* ===== YouTube-style chaptered progress bar (segments ∝ score) ===== */
+  #chapters{position:fixed;left:0;right:0;bottom:0;display:flex;gap:3px;padding:4px 8px;background:rgba(0,0,0,.62);user-select:none;}
+  .chap{position:relative;flex-grow:var(--w);flex-shrink:0;flex-basis:auto;background:rgba(255,255,255,.14);border-radius:4px;overflow:hidden;padding:3px 10px;white-space:nowrap;cursor:pointer;}
+  .chap .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(126,224,160,.38);transition:width .35s ease;}
+  .chap.done{background:rgba(126,224,160,.20);}
+  .chap.current{background:rgba(255,255,255,.26);}
+  .chap.current .fill{background:rgba(142,240,174,.5);}
+  .chap .lbl{position:relative;z-index:1;display:block;font-size:15px;line-height:20px;font-weight:600;color:rgba(255,255,255,.82);}
+  .chap.current .lbl{color:#fff;font-weight:800;}
+  .chap.done .lbl{color:rgba(255,255,255,.95);}
+  .chap .lbl .sc{font-weight:700;margin-left:4px;opacity:.8;}
+  .chap .lbl .pos{margin-left:8px;font-weight:800;color:#9dffbd;}
+
+  /* per-slide static copy of the chapter bar — only for print/PDF */
+  .s-chapters{display:none;position:absolute;left:0;right:0;bottom:0;gap:5px;padding:9px 18px;background:#20303a;}
+  .s-chapters .chap{border-radius:5px;padding:6px 16px;}
+  .s-chapters .chap .lbl{font-size:23px;line-height:1.25;}
+  .s-chapters .chap .lbl .sc{margin-left:8px;}
+  .s-chapters .chap .lbl .pos{margin-left:10px;}
+
+  @media print{
+    @page{ size:1920px 1080px; margin:0; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    body{overflow:visible;background:#fff;}
+    #hud,#chapters{display:none!important;}
+    #stage{position:static;}
+     #deck{transform:none!important;box-shadow:none;position:static;width:auto;height:auto;}
+     .slide{display:flex!important;position:relative;width:1920px;height:1080px;page-break-after:always;}
+     .s-foot{bottom:66px;}
+     .s-next-hint{bottom:118px;}
+     .s-chapters{display:flex!important;}
+    .video-box iframe{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck"></div></div>
+<div id="chapters"></div>
+<div id="hud">
+  <button id="prev">◀ 上一頁</button>
+  <span id="counter">1 / 1</span>
+  <button id="next">下一頁 ▶</button>
+  <span class="hint">PgUp / PgDn · ↑ / ↓ · 空白鍵 · 滑鼠滾輪 · 方向鍵</span>
+</div>
+
+<script>
+/* ============================================================
+   DECK META — fill per project
+   ============================================================ */
+const DECK = {
+  footerName:  "{{DECK_OR_PROJECT_NAME}}",  // footer, left of the page number
+  footerOrg:   "{{ORG_OR_VENDOR_NAME}}",    // footer, right end
+  overviewLabel: "目錄",                    // footer label on item:"all" pages (cover / TOC)
+  cornerLogo:  "tpi_logo.png",              // small logo, top-right of page 2+. "" to hide.
+  coverLogos:  ["tpi_logo.png"],            // logos on the cover:
+                                            //   []  → none
+                                            //   [a] → single logo, upper-left
+                                            //   [a,b] → bid layout: a = client (big, left), b = vendor (small, white, right)
+  showWeights: false,                       // true → chapter bar + footer show each section's numeric weight
+                                            //        (set true for bids: weight = 配分)
+};
+
+/* Sections — the deck's backbone; one segment per section on the bottom progress bar.
+   `weight` (alias `score`) sets that segment's width; omit → all sections equal width.
+   Keep keys stable. Slides join a section via `item: '<key>'`; use item:'all' for cover/TOC. */
+const CHAPTERS = [
+  { key:'s1', label:'背景與問題' },
+  { key:'s2', label:'解決方案' },
+  { key:'s3', label:'成效與結論' },
+];
+
+/* Slides.  type = cover | table | points | shot | shots | video
+   Common fields: item ('all' for intro pages, else a CHAPTERS key), kicker, title, sub, nextHint?
+   - cover : { cover:[lines], dateline? }
+   - table : { table:{ head:[...], rows:[[...],...] } }   (column index 1 renders centred/emphasised)
+    - points: { points:[ "<b>lead</b>：rest", ... ], note? }
+   - shot  : { img:"file.png", bare?:true }   bare = image is self-titled → drop title + sub
+   - shots : { shots:[ ["file.png","caption"], ... ] }
+   - video : { videoId:"YOUTUBE_ID", poster:"poster.jpg" }
+*/
+const SLIDES = [
+  { type:"cover", item:"all",
+    title:"{{DECK_TITLE_LINE_1}}<span class=\"dt\">{{DECK_TITLE_LINE_2}}</span>",
+    sub:"{{ONE_LINE_SUBTITLE}}",
+    cover:[
+      "{{META_LINE_1}}",
+      "{{META_LINE_2}}",
+      "{{META_LINE_3}}",
+    ],
+    dateline:"{{DATE_OR_OMIT}}" },
+
+  { type:"points", item:"s1",
+    kicker:"第一節",
+    title:"{{SECTION_1_TITLE}}",
+    sub:"{{SECTION_1_SUBTITLE}}",
+    points:[
+      "<b>要點一</b>：……",
+       "<b>要點二</b>：……",
+       "<b>要點三</b>：……",
+     ],
+     nextHint:"下一頁：解決方案　→" },
+
+  // … one object per source-markdown page …
+];
+
+/* ============================================================
+   ENGINE — no need to edit below
+   ============================================================ */
+const W = c => Number(c.weight ?? c.score ?? 1);
+const ITEMS = {}; CHAPTERS.forEach(c => ITEMS[c.key] = { label:c.label, weight:W(c) });
+ITEMS.all = { label:DECK.overviewLabel || "", weight:0 };
+CHAPTERS.forEach(c => { c.idxs = SLIDES.map((s,i)=>s.item===c.key?i:-1).filter(i=>i>=0); });
+
+function chapLabel(c, extra){
+  return `${c.label}`
+    + (DECK.showWeights ? `<span class="sc">${W(c)}</span>` : '')
+    + (extra || '');
+}
+function chapBarHTML(slideIdx){
+  const curCi = CHAPTERS.findIndex(c => c.key === SLIDES[slideIdx].item);
+  return CHAPTERS.map((c, ci) => {
+    let fill = 0, cls = '', extra = '';
+    if (curCi === -1) {}
+    else if (ci < curCi) { fill = 1; cls = 'done'; extra = `<span class="pos">✓</span>`; }
+    else if (ci === curCi) { cls = 'current'; fill = (c.idxs.indexOf(slideIdx) + 1) / c.idxs.length;
+      extra = `<span class="pos">${c.idxs.indexOf(slideIdx) + 1}/${c.idxs.length}</span>`; }
+    return `<div class="chap ${cls}" style="flex-grow:${W(c)}"><span class="fill" style="width:${fill*100}%"></span><span class="lbl">${chapLabel(c, extra)}</span></div>`;
+  }).join('');
+}
+
+const deck = document.getElementById('deck');
+SLIDES.forEach((s, i) => {
+  const it = ITEMS[s.item] || ITEMS.all;
+  const el = document.createElement('section');
+  el.className = 'slide'
+    + (s.type === 'cover' ? ' cover' : '')
+    + (s.type === 'shot' || s.type === 'shots' || s.type === 'video' ? ' slide--media' : '')
+    + (s.bare ? ' slide--bare' : '');
+  let inner = '';
+  if (s.type === 'cover') {
+    const lg = DECK.coverLogos || [];
+    if (lg.length >= 2)
+      inner += `<div class="cover-logos"><img class="client" src="${lg[0]}" alt=""><img class="vendor" src="${lg[1]}" alt=""></div>`;
+    else if (lg.length === 1)
+      inner += `<div class="cover-logos cover-logos--one"><img class="client" src="${lg[0]}" alt=""></div>`;
+    inner += `<h1 class="s-title">${s.title}</h1>`;
+    inner += `<div class="s-sub">${s.sub}</div>`;
+    inner += `<div class="cover-meta">${(s.cover||[]).map(c=>`<span>${c}</span>`).join('')}${s.dateline?`<span class="date">${s.dateline}</span>`:''}</div>`;
+  } else {
+    inner += `<div class="s-kicker">${s.kicker||''}</div>`;
+    if (!s.bare) {
+      inner += `<h2 class="s-title${(s.title||'').length>22?' small':''}">${s.title}</h2>`;
+      inner += `<div class="s-sub">${s.sub||''}</div>`;
+    }
+    inner += `<div class="s-body">`;
+    if (s.type === 'points') {
+      inner += `<ul class="points">${s.points.map(p=>`<li><span class="mk"></span><div class="tx">${p}</div></li>`).join('')}</ul>`;
+    } else if (s.type === 'table') {
+      inner += `<table class="grid"><thead><tr>${s.table.head.map((h,idx)=>`<th${idx===1?' style="text-align:center"':''}>${h}</th>`).join('')}</tr></thead><tbody>`;
+      inner += s.table.rows.map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td>${r.slice(2).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+      inner += `</tbody></table>`;
+    } else if (s.type === 'shots') {
+      inner += `<div class="shots">${s.shots.map(sh=>`<figure><img src="${sh[0]}" alt=""><figcaption>${sh[1]}</figcaption></figure>`).join('')}</div>`;
+    } else if (s.type === 'shot') {
+      inner += `<div class="shot-one"><img src="${s.img}" alt=""></div>`;
+    } else if (s.type === 'video') {
+      inner += `<div class="video-wrap"><button class="video-box" data-vid="${s.videoId}"><img class="vposter" src="${s.poster}" alt=""><span class="vplay"></span><span class="vcap">播放操作影片　·　https://youtu.be/${s.videoId}</span></button></div>`;
+    }
+     inner += `</div>`;
+     if (s.note) inner += `<div class="s-note">${s.note}</div>`;
+   }
+   if (s.nextHint) inner += `<div class="s-next-hint">${s.nextHint}</div>`;
+   const footLabel = s.item === 'all'
+    ? it.label
+    : (DECK.showWeights ? `${it.label}（配分 ${it.weight}）` : it.label);
+  const footMeta = [String(i+1).padStart(2,'0') + ' / ' + String(SLIDES.length).padStart(2,'0'),
+                    DECK.footerName, DECK.footerOrg].filter(Boolean).join('　·　');
+  inner += `<div class="s-foot"><span>${footLabel}</span><span>${footMeta}</span></div>`;
+  if (s.type !== 'cover' && DECK.cornerLogo) inner += `<img class="deck-logo" src="${DECK.cornerLogo}" alt="">`;
+  inner += `<div class="s-chapters">${chapBarHTML(i)}</div>`;
+  el.innerHTML = inner;
+  deck.appendChild(el);
+});
+
+deck.addEventListener('click', e => {
+  const box = e.target.closest('.video-box');
+  if (!box || box.classList.contains('playing')) return;
+  const id = box.dataset.vid;
+  if (location.protocol === 'http:' || location.protocol === 'https:') {
+    const f = document.createElement('iframe');
+    f.src = `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&autoplay=1`;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    box.appendChild(f); box.classList.add('playing');
+  } else {
+    window.open(`https://www.youtube.com/watch?v=${id}`, '_blank', 'noopener');
+  }
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+const counter = document.getElementById('counter');
+const chapWrap = document.getElementById('chapters');
+const hudEl = document.getElementById('hud');
+let cur = 0;
+
+CHAPTERS.forEach((c, ci) => {
+  const seg = document.createElement('div');
+  seg.className = 'chap';
+  seg.style.setProperty('--w', W(c));
+  seg.style.flexGrow = W(c);
+  seg.innerHTML = `<span class="fill"></span><span class="lbl"></span>`;
+  seg.addEventListener('click', () => { if (c.idxs.length) go(c.idxs[0]); });
+  c._seg = seg; c._fill = seg.querySelector('.fill'); c._lbl = seg.querySelector('.lbl');
+  chapWrap.appendChild(seg);
+});
+function updateChapters(){
+  const curCi = CHAPTERS.findIndex(c => c.key === SLIDES[cur].item);
+  CHAPTERS.forEach((c, ci) => {
+    let fill = 0, state = '', extra = '';
+    if (curCi === -1) {}
+    else if (ci < curCi) { fill = 1; state = 'done'; extra = `<span class="pos">✓</span>`; }
+    else if (ci === curCi) { state = 'current'; fill = (c.idxs.indexOf(cur) + 1) / c.idxs.length;
+      extra = `<span class="pos">${c.idxs.indexOf(cur) + 1}/${c.idxs.length}</span>`; }
+    c._seg.classList.toggle('current', state === 'current');
+    c._seg.classList.toggle('done', state === 'done');
+    c._fill.style.width = (fill * 100) + '%';
+    c._lbl.innerHTML = chapLabel(c, extra);
+  });
+}
+function placeChapters(){
+  // pin the progress bar flush under the slide's bottom edge (so the in-slide footer sits
+  // right above it), but never let the bar or the HUD slide off-screen.
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  const deckBottom = 1080 * scale;
+  const chapH = chapWrap.offsetHeight || 30;
+  const top = Math.min(deckBottom, window.innerHeight - hudEl.offsetHeight - chapH);
+  chapWrap.style.top = Math.max(0, top) + 'px';
+  chapWrap.style.bottom = 'auto';
+}
+
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  counter.textContent = `${cur+1} / ${slides.length}`;
+  updateChapters();
+  placeChapters();
+  location.hash = cur+1;
+}
+function go(i){ cur = Math.max(0, Math.min(slides.length-1, i)); render(); }
+function next(){ go(cur+1); }
+function prev(){ go(cur-1); }
+document.getElementById('next').addEventListener('click', next);
+document.getElementById('prev').addEventListener('click', prev);
+
+window.addEventListener('keydown', e => {
+  switch(e.key){
+    case 'PageDown': case 'ArrowRight': case 'ArrowDown': case ' ': case 'Enter': e.preventDefault(); next(); break;
+    case 'PageUp': case 'ArrowLeft': case 'ArrowUp': case 'Backspace': e.preventDefault(); prev(); break;
+    case 'Home': e.preventDefault(); go(0); break;
+    case 'End': e.preventDefault(); go(slides.length-1); break;
+  }
+});
+let wheelLock = false;
+window.addEventListener('wheel', e => {
+  if (wheelLock || Math.abs(e.deltaY) < 8) return;
+  wheelLock = true; (e.deltaY > 0 ? next : prev)();
+  setTimeout(() => { wheelLock = false; }, 550);
+}, { passive:true });
+let ty = null;
+window.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, {passive:true});
+window.addEventListener('touchend', e => {
+  if (ty === null) return;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) (dy < 0 ? next : prev)();
+  ty = null;
+}, {passive:true});
+
+function fit(){
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  deck.style.transform = `scale(${scale})`;
+  placeChapters();
+}
+window.addEventListener('resize', fit);
+fit();
+
+const h = parseInt(location.hash.replace('#',''), 10);
+go(Number.isFinite(h) && h>=1 ? h-1 : 0);
+</script>
+</body>
+</html>

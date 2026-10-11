@@ -1,0 +1,99 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: 員郭
+      - generic [ref=e5]:
+        - generic [ref=e6]: 個別化照顧計畫平台
+        - generic [ref=e7]: 住院復健 × 生活功能解鎖 整合展示 Demo
+    - generic [ref=e8]:
+      - button "計畫總覽" [ref=e9] [cursor=pointer]: 計畫總覽
+      - button "願望蒐集" [ref=e11] [cursor=pointer]: 願望蒐集
+      - button "生活功能解鎖護照" [ref=e13] [cursor=pointer]: 生活功能解鎖護照
+      - button "結案成果" [ref=e15] [cursor=pointer]: 結案成果
+    - generic [ref=e17]: DEMO 展示環境（示意資料）
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]: 登入身分
+        - generic [ref=e24]: 治療師 / 個管
+      - generic [ref=e25]:
+        - generic [ref=e26]: 總覽
+        - generic [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: 🧭
+          - text: 計畫流程
+        - generic [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: 🧑‍🦽
+          - text: 個案進度
+        - generic [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: 🔗
+          - text: 系統整合說明
+    - generic [ref=e34]:
+      - generic [ref=e35]: 計畫總覽 / 流程
+      - generic [ref=e36]: 個別化照顧計畫 — 六個月流程
+      - generic [ref=e37]: 中風後失去生活自理能力的病人，住院 6 個月內恢復生活自理後出院。因期程長、易了無生趣，課程採遊戲化設計。 「願望蒐集」與「生活功能解鎖護照」為同一套系統的兩個分頁。
+      - generic [ref=e38]:
+        - heading "期程分段" [level=3] [ref=e40]
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - generic [ref=e43]:
+              - generic [ref=e44]: "1"
+              - text: 入院時：願望蒐集
+              - generic [ref=e45]: 護理師｜圖卡/影片問意願，產出願望清單
+            - generic [ref=e46]:
+              - generic [ref=e47]: "2"
+              - text: 前 3 個月：強力期
+              - generic [ref=e48]: 治療師｜院內高強度復健，不跑護照
+            - generic [ref=e49]:
+              - generic [ref=e50]: "3"
+              - text: 後 3 個月：彈性解鎖期
+              - generic [ref=e51]: 病人/家屬/照服員｜護照闖關 150 項
+            - generic [ref=e52]:
+              - generic [ref=e53]: "4"
+              - text: 出院前：返家整合 + 成果輸出
+              - generic [ref=e54]: 醫療團隊｜雷達圖、榮譽證書、匯出
+          - generic [ref=e55]: 頭尾呼應：出院前的衛教內容 = 入院時那批圖卡 / 影片素材（從「看別人做」→「自己做到」）。
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - heading "角色與職責" [level=3] [ref=e59]
+          - table [ref=e61]:
+            - rowgroup [ref=e62]:
+              - row "角色 職責" [ref=e63]:
+                - columnheader "角色" [ref=e64]
+                - columnheader "職責" [ref=e65]
+              - row "護理師 入院時執行願望蒐集、操作介面、填寫觀察備註" [ref=e66]:
+                - cell "護理師" [ref=e67]
+                - cell "入院時執行願望蒐集、操作介面、填寫觀察備註" [ref=e68]
+              - row "治療師 前 3 個月強力期主導；依願望清單規劃方向" [ref=e69]:
+                - cell "治療師" [ref=e70]
+                - cell "前 3 個月強力期主導；依願望清單規劃方向" [ref=e71]
+              - row "病人 / 家屬 表達願望；後段陪伴闖關、選共學夥伴、按「達成」" [ref=e72]:
+                - cell "病人 / 家屬" [ref=e73]
+                - cell "表達願望；後段陪伴闖關、選共學夥伴、按「達成」" [ref=e74]
+              - row "多功能型照顧服務員 後段陪伴病人闖關" [ref=e75]:
+                - cell "多功能型照顧服務員" [ref=e76]
+                - cell "後段陪伴病人闖關" [ref=e77]
+              - row "醫療團隊 結案評估、成果輸出、衛教" [ref=e78]:
+                - cell "醫療團隊" [ref=e79]
+                - cell "結案評估、成果輸出、衛教" [ref=e80]
+        - generic [ref=e81]:
+          - heading "第一階段（MVP）範圍" [level=3] [ref=e83]
+          - table [ref=e85]:
+            - rowgroup [ref=e86]:
+              - row "要做 留待 2.0" [ref=e87]:
+                - columnheader "要做" [ref=e88]
+                - columnheader "留待 2.0" [ref=e89]
+              - row "願望蒐集模組（兩層瀏覽 + 詳情） 治療師後台 / 中臺" [ref=e90]:
+                - cell "願望蒐集模組（兩層瀏覽 + 詳情）" [ref=e91]
+                - cell "治療師後台 / 中臺" [ref=e92]
+              - row "圖卡 40–60 張 全套 150 項圖卡" [ref=e93]:
+                - cell "圖卡 40–60 張" [ref=e94]
+                - cell "全套 150 項圖卡" [ref=e95]
+              - row "輕量登入（姓名 + 身分證後4碼 / 生日） 嚴格身分驗證" [ref=e96]:
+                - cell "輕量登入（姓名 + 身分證後4碼 / 生日）" [ref=e97]
+                - cell "嚴格身分驗證" [ref=e98]
+              - row "願望清單產出 願望與 150 項自動對應" [ref=e99]:
+                - cell "願望清單產出" [ref=e100]
+                - cell "願望與 150 項自動對應" [ref=e101]
+              - row "與護照系統並行 PAC / SSO 串接、點數規則" [ref=e102]:
+                - cell "與護照系統並行" [ref=e103]
+                - cell "PAC / SSO 串接、點數規則" [ref=e104]

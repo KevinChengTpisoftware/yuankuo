@@ -1,0 +1,84 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: 員郭
+      - generic [ref=e5]:
+        - generic [ref=e6]: 個別化照顧計畫平台
+        - generic [ref=e7]: 住院復健 × 生活功能解鎖 整合展示 Demo
+    - generic [ref=e8]:
+      - button "計畫總覽" [ref=e9] [cursor=pointer]: 計畫總覽
+      - button "願望蒐集" [ref=e11] [cursor=pointer]: 願望蒐集
+      - button "生活功能解鎖護照" [ref=e13] [cursor=pointer]: 生活功能解鎖護照
+      - button "結案成果" [ref=e15] [cursor=pointer]: 結案成果
+    - generic [ref=e17]: DEMO 展示環境（示意資料）
+  - generic [ref=e106]:
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - generic [ref=e109]: 登入身分
+        - generic [ref=e110]: 護理師（陪同病人操作）
+      - generic [ref=e111]:
+        - generic [ref=e112]: 願望蒐集流程
+        - generic [ref=e113] [cursor=pointer]:
+          - generic [ref=e114]: ①
+          - text: 開始 / 身分驗證
+        - generic [ref=e115] [cursor=pointer]:
+          - generic [ref=e116]: ②
+          - text: 願望探索
+        - generic [ref=e117] [cursor=pointer]:
+          - generic [ref=e118]: ③
+          - text: 我的願望
+          - generic [ref=e119]: "0"
+        - generic [ref=e120] [cursor=pointer]:
+          - generic [ref=e121]: ④
+          - text: 完成 / 產出清單
+    - generic [ref=e144]:
+      - generic [ref=e145]: 願望蒐集 / 願望探索
+      - generic [ref=e146]: 願望探索
+      - generic [ref=e147]:
+        - text: 第一層先點六大分類，才會出現 3×3 圖卡 / 影片牆；點一張卡進入單張大卡填寫。可自由切換、來回瀏覽。
+        - text: 縮圖暫用 ARASAAC 公開圖庫（CC BY-NC-SA，Sergio Palao / ARASAAC / 阿拉貢政府）示意，正式版將替換為自製插畫或實景照片。
+      - generic [ref=e148]:
+        - button "食" [ref=e149] [cursor=pointer]
+        - button "衣" [ref=e150] [cursor=pointer]
+        - button "住" [ref=e151] [cursor=pointer]
+        - button "行" [ref=e152] [cursor=pointer]
+        - button "育" [ref=e153] [cursor=pointer]
+        - button "樂" [ref=e154] [cursor=pointer]
+        - button "🧺 我的願望 (0)" [ref=e155] [cursor=pointer]
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - generic [ref=e158] [cursor=pointer]:
+            - img "自己拿筷子吃飯" [ref=e160]
+            - generic [ref=e161]: 自己拿筷子吃飯
+          - generic [ref=e162] [cursor=pointer]:
+            - generic [ref=e163]:
+              - img "喝湯不灑出來" [ref=e164]
+              - generic [ref=e165]: ▶
+            - generic [ref=e166]: 喝湯不灑出來
+          - generic [ref=e167] [cursor=pointer]:
+            - img "打開寶特瓶 / 罐頭" [ref=e169]
+            - generic [ref=e170]: 打開寶特瓶 / 罐頭
+          - generic [ref=e171] [cursor=pointer]:
+            - img "用湯匙舀飯菜" [ref=e173]
+            - generic [ref=e174]: 用湯匙舀飯菜
+          - generic [ref=e175] [cursor=pointer]:
+            - img "剝橘子 / 水果" [ref=e177]
+            - generic [ref=e178]: 剝橘子 / 水果
+          - generic [ref=e179] [cursor=pointer]:
+            - img "夾菜到自己碗裡" [ref=e181]
+            - generic [ref=e182]: 夾菜到自己碗裡
+          - generic [ref=e183] [cursor=pointer]:
+            - generic [ref=e184]:
+              - img "自己備一餐" [ref=e185]
+              - generic [ref=e186]: ▶
+            - generic [ref=e187]: 自己備一餐
+          - generic [ref=e188] [cursor=pointer]:
+            - img "泡一杯茶 / 咖啡" [ref=e190]
+            - generic [ref=e191]: 泡一杯茶 / 咖啡
+          - generic [ref=e192] [cursor=pointer]:
+            - img "咬蘋果" [ref=e194]
+            - generic [ref=e195]: 咬蘋果
+        - generic [ref=e196]:
+          - button "‹ 上一頁" [disabled] [ref=e197]
+          - generic [ref=e198]: 第 1 / 1 頁
+          - button "下一頁 ›" [disabled] [ref=e199]

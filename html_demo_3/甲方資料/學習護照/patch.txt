@@ -1,0 +1,7 @@
+import { Share2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+
+// add states around line 48
+const [unlockedBadges, setUnlockedBadges] = useState<Record<string, string>>({});
+const [shareData, setShareData] = useState<{name: string, icon: string, date: string, desc: string} | null>(null);
+const shareCardRef = useRef<HTMLDivElement>(null);

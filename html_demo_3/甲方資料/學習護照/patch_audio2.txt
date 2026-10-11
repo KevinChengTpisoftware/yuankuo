@@ -1,0 +1,22 @@
+export const stopBGM = (immediate = false) => {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const fadeTime = immediate ? 0.1 : 3;
+  
+  const nodesToStop = [...activeNodes];
+  activeNodes = []; // 立即清空，避免被後續的 startBGM 覆蓋或影響
+  
+  nodesToStop.forEach(node => {
+    if (node instanceof GainNode) {
+      try {
+        node.gain.cancelScheduledValues(now);
+        node.gain.setValueAtTime(node.gain.value, now);
+        node.gain.linearRampToValueAtTime(0, now + fadeTime);
+      } catch (e) {}
+    } else if (node instanceof OscillatorNode || node instanceof AudioBufferSourceNode) {
+      try {
+        node.stop(now + fadeTime + 0.1);
+      } catch (e) {}
+    }
+  });
+};

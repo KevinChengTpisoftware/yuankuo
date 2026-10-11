@@ -1,0 +1,14 @@
+    let statsText = '';
+    if (activeCategory === '全部') {
+      const overallBronze = TASKS.filter(t => t.tier === 'bronze');
+      const overallSilver = TASKS.filter(t => t.tier === 'silver');
+      const overallGold = TASKS.filter(t => t.tier === 'gold');
+      
+      statsText = `[整體進度摘要]\n🏆 銅盃總計：${overallBronze.filter(t => completedTasks.has(t.id)).length}/${overallBronze.length}\n🏆 銀盃總計：${overallSilver.filter(t => completedTasks.has(t.id)).length}/${overallSilver.length}\n🏆 金盃總計：${overallGold.filter(t => completedTasks.has(t.id)).length}/${overallGold.length}\n👑 白金任務：${completedTasks.has(150) ? '1/1 (已達成)' : '0/1 (未達成)'}`;
+    } else {
+      statsText = `[進度摘要 (目前領域: ${activeCategory})]\n🏆 銅盃：${bronzeCompleted}/${bronzeCount}\n🏆 銀盃：${silverCompleted}/${silverCount}\n🏆 金盃：${goldCompleted}/${goldCount}`;
+    }
+
+    const text = `【生活功能解鎖護照】進度回報\n總達成率：${totalProgressPercentage}% (${completedTasks.size}/${TASKS.length})\n\n${statsText}\n\n[已完成所有任務]\n${completedList.length > 0 ? completedList.map(t => `- #${t.id} [${t.category}] ${t.title} (${
+      t.tier === 'bronze' ? '銅盃' : t.tier === 'silver' ? '銀盃' : t.tier === 'gold' ? '金盃' : '白金'
+    })`).join('\n') : '尚未完成任何任務'}\n`;

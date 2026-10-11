@@ -1,0 +1,10 @@
+  useEffect(() => {
+    if (showPrologue) {
+      startBGM('prologue');
+    } else if (milestoneStory) {
+      startBGM('milestone');
+    } else {
+      stopBGM();
+    }
+
+    if (showPrologue || milestoneStory) {

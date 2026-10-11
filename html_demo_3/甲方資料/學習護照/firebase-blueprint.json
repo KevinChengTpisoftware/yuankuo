@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "Patient": {
+      "title": "Patient",
+      "description": "復健個案基本資料與照護資訊",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "個案識別碼" },
+        "name": { "type": "string", "maxLength": 100, "description": "個案姓名" },
+        "caseNumber": { "type": "string", "maxLength": 50, "description": "病歷號或專屬編號" },
+        "bedNumber": { "type": "string", "maxLength": 50, "description": "床號" },
+        "age": { "type": "string", "maxLength": 20, "description": "年紀" },
+        "upstreamHospital": { "type": "string", "maxLength": 100, "description": "上游醫院" },
+        "caregiver": { "type": "string", "maxLength": 100, "description": "照顧者" },
+        "homeLocation": { "type": "string", "maxLength": 200, "description": "個案家在哪" },
+        "primaryMedicalDecisionMaker": { "type": "string", "maxLength": 100, "description": "主要醫療決定者" },
+        "familyMarriage": { "type": "string", "maxLength": 500, "description": "家庭/婚姻" },
+        "economicStatus": { "type": "string", "maxLength": 500, "description": "經濟" },
+        "preMorbidOccupation": { "type": "string", "maxLength": 500, "description": "病前職業生活" },
+        "interestsSpecialties": { "type": "string", "maxLength": 500, "description": "興趣/特殊專長" },
+        "educationLevel": { "type": "string", "maxLength": 100, "description": "教育程度" },
+        "livingEnvironment": { "type": "string", "maxLength": 500, "description": "居住環境" },
+        "cohabitingFamily": { "type": "string", "maxLength": 500, "description": "同住家人" },
+        "preMorbidPersonality": { "type": "string", "maxLength": 500, "description": "病前性格" },
+        "postMorbidPersonality": { "type": "string", "maxLength": 500, "description": "病後個性" },
+        "primaryTherapist": { "type": "string", "maxLength": 100, "description": "主責治療師" },
+        "admissionDate": { "type": "string", "description": "入案評估日期" },
+        "diagnosis": { "type": "string", "maxLength": 200, "description": "主要診斷與偏癱側別" },
+        "targetGoal": { "type": "string", "maxLength": 300, "description": "核心生活目標" },
+        "status": { "type": "string", "enum": ["active", "archived"], "description": "在案中或已結案" },
+        "completedTasks": { "type": "array", "description": "已達成的任務編號清單" },
+        "taskPartners": { "type": "object", "description": "任務對應之協同夥伴紀錄" },
+        "taskCompletedAt": { "type": "object", "description": "各任務解鎖達成之時間戳記 (ISO 格式)" },
+        "clinicalRemarks": { "type": "string", "maxLength": 2000, "description": "臨床評語與建議" },
+        "createdAt": { "type": "string", "description": "建立時間戳記" },
+        "updatedAt": { "type": "string", "description": "更新時間戳記" }
+      },
+      "required": ["name", "caseNumber", "status"]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "臨床工作人員資料與專屬PIN設定",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "人員唯一識別碼" },
+        "name": { "type": "string", "maxLength": 100, "description": "人員姓名" },
+        "title": { "type": "string", "maxLength": 100, "description": "專業職稱" },
+        "pin": { "type": "string", "maxLength": 6, "description": "6位數登入PIN碼" },
+        "createdAt": { "type": "string", "description": "建立時間" },
+        "lastLoginAt": { "type": "string", "description": "最後登入時間" },
+        "isActive": { "type": "boolean", "description": "帳號啟用狀態" },
+        "notes": { "type": "string", "maxLength": 500, "description": "備註說明" }
+      },
+      "required": ["name", "title", "pin", "isActive"]
+    }
+  },
+  "firestore": {
+    "/patients/{patientId}": {
+      "schema": "Patient",
+      "description": "個案名冊與復健護照進度紀錄"
+    },
+    "/staff/{staffId}": {
+      "schema": "StaffMember",
+      "description": "全院臨床工作人員名冊"
+    }
+  }
+}

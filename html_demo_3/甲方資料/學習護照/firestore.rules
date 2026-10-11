@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 預設拒絕所有未明確宣告之存取
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 復健個案資料與生活護照進度
+    match /patients/{patientId} {
+      // 支援前端管理後台與檢核清單之讀取與寫入
+      allow read, write: if true;
+    }
+
+    // 臨床工作人員名冊
+    match /staff/{staffId} {
+      // 支援前端管理人員名冊維護、建立與刪除
+      allow read, write: if true;
+    }
+
+    // 連線健康測試集合
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/logo.png">
+  <title>員郭醫院｜個別化復健系統</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-row">
+    <div class="brand"><img src="assets/logo.png" alt="員郭醫院 Logo"><div><strong>個別化復健系統</strong><small>以病人為核心・願望驅動的生活功能解鎖</small></div></div>
+    <div class="who">
+      <label>目前病人<select id="patientSel"></select></label>
+      <label>操作身分（寫入紀錄用）<select id="roleSel"></select></label>
+      <button class="ghost-btn" id="bigBtn" title="長者大字模式">Aa 大字</button>
+      <button class="ghost-btn" id="muteBtn" title="背景音樂／音效">🔊</button>
+      <button class="ghost-btn" data-act="new-patient">＋ 新增病人</button>
+    </div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</header>
+<main class="main" id="view"></main>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modal"></div></div>
+<div class="book" id="book"></div>
+<div class="toast" id="toast"></div>
+<div class="celebrate" id="celebrate"><img src="assets/icons/cup-150.png" alt=""><h2 id="celTitle"></h2><p class="muted" id="celSub"></p></div>
+<script src="assets/data.js"></script>
+<script src="assets/audio.js"></script>
+<script src="assets/book.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/app-plan.js"></script>
+</body>
+</html>

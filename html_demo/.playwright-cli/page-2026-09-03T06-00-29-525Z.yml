@@ -1,0 +1,52 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: 員郭
+      - generic [ref=e5]:
+        - generic [ref=e6]: 個別化照顧計畫平台
+        - generic [ref=e7]: 住院復健 × 生活功能解鎖 整合展示 Demo
+    - generic [ref=e8]:
+      - button "計畫總覽" [ref=e9] [cursor=pointer]: 計畫總覽
+      - button "願望蒐集" [active] [ref=e11] [cursor=pointer]: 願望蒐集
+      - button "生活功能解鎖護照" [ref=e13] [cursor=pointer]: 生活功能解鎖護照
+      - button "結案成果" [ref=e15] [cursor=pointer]: 結案成果
+    - generic [ref=e17]: DEMO 展示環境（示意資料）
+  - generic [ref=e106]:
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - generic [ref=e109]: 登入身分
+        - generic [ref=e110]: 護理師（陪同病人操作）
+      - generic [ref=e111]:
+        - generic [ref=e112]: 願望蒐集流程
+        - generic [ref=e113] [cursor=pointer]:
+          - generic [ref=e114]: ①
+          - text: 開始 / 身分驗證
+        - generic [ref=e115] [cursor=pointer]:
+          - generic [ref=e116]: ②
+          - text: 願望探索
+        - generic [ref=e117] [cursor=pointer]:
+          - generic [ref=e118]: ③
+          - text: 我的願望
+          - generic [ref=e119]: "0"
+        - generic [ref=e120] [cursor=pointer]:
+          - generic [ref=e121]: ④
+          - text: 完成 / 產出清單
+    - generic [ref=e123]:
+      - generic [ref=e124]: 願望蒐集 / 開始
+      - generic [ref=e125]: 入院願望蒐集
+      - generic [ref=e126]: 護理師於病人入院時陪同操作（家屬在場更佳）。以平板瀏覽圖卡 / 影片，讓病人指出想達成的生活願望。
+      - generic [ref=e128]:
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - generic [ref=e131]: 護照持有人姓名
+            - textbox [ref=e132]: 王大明
+          - generic [ref=e133]:
+            - generic [ref=e134]: 驗證方式
+            - generic [ref=e135]:
+              - generic [ref=e136] [cursor=pointer]: 身分證後 4 碼
+              - generic [ref=e137] [cursor=pointer]: 生日
+          - generic [ref=e138]:
+            - generic [ref=e139]: 驗證值
+            - textbox "＊＊＊＊" [ref=e140]
+          - button "開始 →" [ref=e142] [cursor=pointer]
+        - generic [ref=e143]: 本版採輕量驗證：姓名 + 身分證後 4 碼 或 生日 擇一。病歷號欄位預留，供日後 PAC 串接。
