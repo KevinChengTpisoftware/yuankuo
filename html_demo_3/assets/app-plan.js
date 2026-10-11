@@ -35,11 +35,11 @@ VIEWS.plan=()=>{
   <div class="panel"><div class="section-title"><h3>檢討與修訂提醒</h3><span class="badge">${last?`目前最新：v${last.ver}`:'尚無版本（初版）'}</span></div>
     ${ri?`<div class="notice ${ri.rv[0]==='red'?'':ri.rv[0]==='amber'?'':'info'}"><b>定期檢討：</b>${ri.rv[1]}</div><div class="notice ${ri.due80?'':'info'}"><b>80 天修訂：</b>${ri.due80?`本輪已滿 ${ri.cyc} 天，患者預期目標／長期／短期／預後目標需重新修訂並產生新版本（舊版保留）。`:`本輪第 ${ri.cyc} 天，滿 80 天（還有 ${80-ri.cyc} 天）後需再修訂一次。`}</div>`:'<div class="notice info">尚未建立初版。完成下列內容後儲存即為 v1，之後約每 2～3 週檢討，80 天重新修訂一次。</div>'}
     <div class="actions"><span class="small">展示用：模擬時間快轉（目前 +${db.dayShift} 天）</span><button class="ghost-btn" data-act="shift" data-n="14">+14 天</button><button class="ghost-btn" data-act="shift" data-n="80">+80 天</button><button class="ghost-btn" data-act="shift" data-n="0">還原</button></div></div>
-  <div class="panel"><div class="section-title"><div><h3>① 患者預期目標</h3><span class="small">來源：願望圖卡第二層文字，依願望象限排序，可修改</span></div><button class="ghost-btn" data-act="nav" data-v="quad">調整願望／象限</button></div>
-    ${d.expect.length?d.expect.map((e,i)=>{const w=wishObj(p,e.wid),k=qOf(p.place[e.wid]);return `<div class="expect-item"><h4>${w.i||'⭐'} ${esc(w.n)} ${k?`<span class="badge ${k==='tr'?'':k==='br'?'blue':k==='tl'?'amber':'gray'}">${QN[k][0]} ${QN[k][1]}</span>`:''}</h4><textarea data-in="expect" data-i="${i}" style="min-height:60px">${esc(e.text)}</textarea></div>`}).join(''):'<div class="empty">尚未選擇願望</div>'}</div>
+    <div class="panel"><div class="section-title"><div><h3>① 患者預期目標</h3><span class="small">來源：最終願望文字，依確認順序呈現，可修改；象限配置的是生活功能項目</span></div><button class="ghost-btn" data-act="nav" data-v="quad">調整生活功能象限</button></div>
+    ${d.expect.length?d.expect.map((e,i)=>{const w=wishObj(p,e.wid);return `<div class="expect-item"><h4>${w.i||'⭐'} ${esc(w.n)}</h4><textarea data-in="expect" data-i="${i}" style="min-height:60px">${esc(e.text)}</textarea></div>`}).join(''):'<div class="empty">尚未選擇願望</div>'}</div>
   <div class="grid2">
-    <div class="panel"><div class="section-title"><h3>② 長期目標</h3><button class="ghost-btn" data-act="goal-from-tasks" data-k="long">由長期任務帶入</button></div><textarea data-in="goal" data-k="long" style="min-height:150px" placeholder="每行一個目標">${esc(lines(d.long))}</textarea></div>
-    <div class="panel"><div class="section-title"><h3>③ 短期目標</h3><button class="ghost-btn" data-act="goal-from-tasks" data-k="short">由短期任務帶入</button></div><textarea data-in="goal" data-k="short" style="min-height:150px" placeholder="每行一個目標">${esc(lines(d.short))}</textarea></div>
+    <div class="panel"><div class="section-title"><h3>② 長期目標</h3><button class="ghost-btn" data-act="goal-from-tasks" data-k="long">由長期任務帶入</button></div>${goalPhraseButtons('long')}<textarea data-in="goal" data-k="long" style="min-height:150px" placeholder="每行一個目標">${esc(lines(d.long))}</textarea></div>
+    <div class="panel"><div class="section-title"><h3>③ 短期目標</h3><button class="ghost-btn" data-act="goal-from-tasks" data-k="short">由短期任務帶入</button></div>${goalPhraseButtons('short')}<textarea data-in="goal" data-k="short" style="min-height:150px" placeholder="每行一個目標">${esc(lines(d.short))}</textarea></div>
   </div>
   <div class="panel"><div class="section-title"><div><h3>④ 任務的短／長期（由治療師決定）</h3><span class="small">同一任務對不同病人的難度與時間點不同，故在此個別決定</span></div><button class="ghost-btn" data-act="nav" data-v="tasks">增減任務</button></div>
     ${p.sel.length?`<div class="table-wrap"><table class="data-table" style="min-width:560px"><thead><tr><th>任務</th><th>領域</th><th>短／長期</th></tr></thead><tbody>${p.sel.map(id=>{const t=task(id);return `<tr><td><img src="${iconOf(id)}" alt="" style="width:34px;height:34px;vertical-align:middle;margin-right:8px"><b>${esc(t.n)}</b></td><td>${t.d}</td><td><div class="term-switch">${termBtn(id,'short','短期')}${termBtn(id,'long','長期')}</div></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">尚未選擇任務</div>'}</div>
@@ -59,7 +59,10 @@ function commitModal(){
 function planCommit(){
   const p=P(),d=ensureDraft(p),type=$('#cmType').value.replace(/（.*）/,'')==='定期檢討'?'定期檢討':$('#cmType').value,reason=$('#cmReason').value.trim();
   if(p.plans.length&&!reason){toast('請填寫修訂原因');return}
-  const v={ver:p.plans.length+1,at:now().toISOString(),by:who(),type,reason:reason||'建立初版復健計畫',snap:clone(d)};
+  const snap=clone(d);
+  snap.expect.forEach(e=>{e.name=wishObj(p,e.wid)?.n||e.wid});
+  snap.taskIds=p.sel.slice();snap.functionPlace=clone(p.functionPlace);
+  const v={ver:p.plans.length+1,at:now().toISOString(),by:who(),type,reason:reason||'建立初版復健計畫',snap};
   p.plans.push(v);log('復健計畫新版本',`v${v.ver}｜${type}｜${v.reason}`);closeModal();render();toast(`已儲存 v${v.ver}`);
 }
 function verView(n){
@@ -67,7 +70,7 @@ function verView(n){
   const ch=k=>pv&&JSON.stringify(pv.snap[k])!==JSON.stringify(s[k])?' <span class="badge amber">已變更</span>':'';
   const wn=id=>esc(wishObj(p,id)?.n||id);
   openModal(`${mhead('v'+v.ver+'｜'+v.type)}<p class="small">${fmtT(v.at)}｜${esc(v.by)}｜原因：${esc(v.reason)}</p>
-  <h4>患者預期目標${ch('expect')}</h4><ul>${s.expect.map(e=>`<li><b>${wn(e.wid)}</b>：${esc(e.text)}</li>`).join('')||'<li>—</li>'}</ul>
+  <h4>患者預期目標${ch('expect')}</h4><ul>${s.expect.map(e=>`<li><b>${e.name?esc(e.name):wn(e.wid)}</b>：${esc(e.text)}</li>`).join('')||'<li>—</li>'}</ul>
   <h4>長期目標${ch('long')}</h4><ul>${s.long.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul>
   <h4>短期目標${ch('short')}</h4><ul>${s.short.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul>
   <h4>任務短／長期${ch('term')}</h4><ul>${Object.entries(s.term).map(([id,t])=>`<li>${esc(TASK_BY_ID[id]?.n)}：${t==='long'?'長期':'短期'}</li>`).join('')||'<li>—</li>'}</ul>
@@ -101,8 +104,9 @@ function passport1(p,pr){
 function passport2(p){
   const on=planOn(p),last=p.plans[p.plans.length-1],snap=on&&last?last.snap:null;
   const tl=(ids)=>ids.length?`<div class="task-grid">${ids.map(id=>{const t=task(id),s=stOf(p,id);return `<button class="pcard ${s==='已解鎖'?'done':s==='進行中'?'prog':''}" data-act="pp-open" data-id="${id}" style="min-height:190px"><span class="small"><b>${s==='已解鎖'?'✅ 已解鎖':s==='進行中'?'🔄 進行中':'🔒 尚未開始'}</b></span><img src="${iconOf(id)}" alt="" style="width:64px;height:64px" data-act="book-open" data-k="plan" data-id="${id}"><h4>${esc(t.n)}</h4></button>`}).join('')}</div>`:'<p class="muted">無</p>';
-  const term=snap?snap.term:{},sh=p.sel.filter(i=>term[i]==='short'),lg=p.sel.filter(i=>term[i]==='long'),un=p.sel.filter(i=>!term[i]);
-  const ws=orderedWishes(p);
+  const planIds=snap?(snap.taskIds||Object.keys(snap.term).map(Number)):p.sel;
+  const term=snap?snap.term:{},sh=planIds.filter(i=>term[i]==='short'),lg=planIds.filter(i=>term[i]==='long'),un=planIds.filter(i=>!term[i]);
+  const ws=snap?snap.expect.map(e=>({...(wishObj(p,e.wid)||{}),id:e.wid,n:e.name||wishObj(p,e.wid)?.n||e.wid,s:e.text})):orderedWishes(p);
   return `<div class="panel"><div class="section-title"><h3>🎯 ${esc(p.name)} 的個人照護計畫</h3><span class="badge ${on?'':'gray'}">${stageOf(p)}${snap?`｜計畫 v${last.ver}`:''}</span></div>
     ${on&&!snap?'<div class="notice">此病人尚未建立復健計畫，請至「⑥ 復健計畫」建立。</div>':''}${!on?'<div class="notice info">目前階段不需建立復健計畫，以下僅顯示已選的生活復健任務。</div>':''}
     <h4>我的願望</h4>${ws.length?ws.map(w=>`<div class="expect-item"><b>${w.i||'⭐'} ${esc(w.n)}</b><div class="small">${esc((snap&&snap.expect.find(e=>e.wid===w.id)?.text)||w.s||'')}</div></div>`).join(''):'<p class="muted">尚未選擇願望</p>'}
@@ -118,10 +122,14 @@ function passportModal(id){
 
 /* ============ 後台管理 ============ */
 VIEWS.admin=()=>{
-  const tabs=[['tasks','生活任務庫'],['stages','階段設定'],['phrases','預後片語'],['logs','操作紀錄（Audit Log）'],['export','匯出／資料']];
+  const tabs=canManage()?[['patients','建檔／參與職類'],['wishes','願望／任務對應'],['tasks','生活任務庫'],['stages','階段設定'],['goals','常用目標語句'],['phrases','預後片語'],['logs','操作紀錄（Audit Log）'],['export','匯出／資料']]:[['patients','建檔']];
+  if(!tabs.some(([key])=>key===ui.ad))ui.ad=tabs[0][0];
   const bar=`<div class="tabs">${tabs.map(([k,l])=>`<button class="ghost-btn ${ui.ad===k?'on':''}" data-act="ad-tab" data-k="${k}">${l}</button>`).join('')}</div>`;
   let body='';
-  if(ui.ad==='tasks'){
+  if(ui.ad==='patients')body=adminPatients();
+  else if(ui.ad==='wishes')body=adminWishes();
+  else if(ui.ad==='goals')body=adminGoals();
+  else if(ui.ad==='tasks'){
     const list=TASKS.filter(t=>(ui.adom==='all'||t.d===ui.adom)&&(!ui.adq||(t.n+t.x+t.id).includes(ui.adq)));
     body=`<div class="notice info">短期／長期<b>不在後台預設</b>，改由治療師在各病人的復健計畫中決定。任務只能停用，不實體刪除。</div><div class="filterbar"><input id="adq" placeholder="搜尋…" value="${esc(ui.adq)}"><select id="adom"><option value="all">全部領域</option>${DKEYS.map(k=>`<option ${ui.adom===k?'selected':''}>${k}</option>`).join('')}</select><span class="badge">${list.length} 項</span></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>圖示</th><th>#</th><th>領域</th><th>等級</th><th>任務名稱／說明</th><th>狀態</th><th>操作</th></tr></thead><tbody>${list.map(t0=>{const t=task(t0.id),off=db.taskOff[t.id];return `<tr class="${off?'off':''}"><td><img src="${iconOf(t.id)}" alt="" style="width:38px;height:38px;object-fit:contain" loading="lazy"></td><td>${t.id}</td><td>${t.d}</td><td>${TIERS[t.t][0]}</td><td><b>${esc(t.n)}</b><br><span class="small">${esc(t.x.slice(0,70))}${t.x.length>70?'…':''}</span></td><td>${off?'停用':'啟用'}</td><td><button class="ghost-btn" data-act="ad-edit" data-id="${t.id}">編輯</button> <button class="ghost-btn" data-act="ad-toggle" data-id="${t.id}">${off?'啟用':'停用'}</button></td></tr>`}).join('')}</tbody></table></div>`;
@@ -132,11 +140,26 @@ VIEWS.admin=()=>{
   }else if(ui.ad==='logs'){
     body=`<div class="panel"><div class="section-title"><h3>共 ${db.logs.length} 筆</h3><button class="danger" data-act="log-clear">清除紀錄</button></div>${db.logs.length?db.logs.slice(0,300).map(l=>`<div class="log-row"><time>${fmtT(l.at)}｜${esc(l.by)}｜${esc(l.pname)}（${l.pid}）</time><b>${esc(l.action)}</b>　${esc(l.detail)}</div>`).join(''):'<div class="empty">尚無紀錄</div>'}</div>`;
   }else{
-    body=`<div class="panel"><h3>匯出</h3><div class="actions"><button class="secondary" data-act="ex-csv">匯出任務庫 CSV</button><button class="secondary" data-act="ex-json">匯出全部資料 JSON</button></div></div><div class="panel"><h3>示範資料</h3><p class="small">資料儲存在本機瀏覽器（localStorage）。</p><button class="danger" data-act="reset-demo">重設為初始示範資料</button></div>`;
+    body=adminExport();
   }
   return `<div class="hero"><div><div class="eyebrow">ADMIN</div><h1>後台管理</h1><p>任務庫維護、階段設定、片語設定與稽核紀錄。</p></div></div>${bar}${body}`;
 };
-AFTER.admin=()=>{$('#adq')?.addEventListener('change',e=>{ui.adq=e.target.value.trim();render()});$('#adom')?.addEventListener('change',e=>{ui.adom=e.target.value;render()})};
+AFTER.admin=()=>{
+  $('#adq')?.addEventListener('change',e=>{ui.adq=e.target.value.trim();render()});
+  $('#adom')?.addEventListener('change',e=>{ui.adom=e.target.value;render()});
+  document.querySelectorAll('[data-fam-enabled]').forEach(el=>el.addEventListener('change',()=>runChange(()=>{
+    if(!canManage())throw new Error('只有管理員可以設定參與職類');
+    const key=el.dataset.famEnabled;
+    P().famEnabled=el.checked?[...new Set([...P().famEnabled,key])]:P().famEnabled.filter(k=>k!==key);
+    log('設定參與職類',FAM[key].label+'：'+(el.checked?'參與':'不參與'));ui.famKey='';render();
+  })));
+  $('#importJson')?.addEventListener('change',async e=>{
+    if(!canManage())return;
+    const file=e.target.files[0];if(!file)return;
+    if(file.size>5*1024*1024){toast('檔案上限為 5 MB');return}
+    try{const text=await file.text();if(!canManage())throw new Error('身分已變更');prepareImport(text)}catch(error){importPreview=null;toast('匯入拒絕：'+error.message)}
+  });
+};
 
 /* ============ 彈窗：病人 ============ */
 const fld=(id,l,v,t='text')=>`<div class="form-field"><label>${l}</label><input id="${id}" type="${t}" value="${esc(v)}"></div>`;
@@ -153,14 +176,15 @@ function stageModal(){
 /* ============ 事件 ============ */
 const ACT={
   close:()=>closeModal(),
-  nav:el=>{closeModal();go(el.dataset.v)},
+  nav:el=>{closeModal();if(el.dataset.admin)ui.ad=el.dataset.admin;go(el.dataset.v)},
   'new-patient':()=>patientModal(true),
   'edit-patient':()=>patientModal(false),
   'patient-save':()=>{Object.assign(P(),readPatient());log('編輯病人主檔',P().name);closeModal();render();toast('主檔已更新')},
-  'patient-add':()=>{const v=readPatient(),id='P-'+String(db.patients.length+1).padStart(4,'0'),stg=$('#fStage').value;
+  'patient-add':()=>{const v=readPatient(),next=Math.max(0,...db.patients.map(p=>Number(/^P-(\d+)$/.exec(p.id)?.[1])||0))+1,id='P-'+String(next).padStart(4,'0'),stg=$('#fStage').value;
     db.patients.push({id,...v,stages:[{stage:stg,from:fmtD(now()),to:null,note:'新建立'}],wishes:[],custom:[],place:{},sel:[],tasks:{},records:[],fam:{},famHist:[],plans:[],draft:null,planOverride:false});
-    db.cur=id;log('新增病人',`${v.name}｜${stg}`);closeModal();ui.view='patient';render();toast('已新增病人')},
-  'pick-patient':el=>{db.cur=el.dataset.id;save();render()},
+    const added=db.patients[db.patients.length-1];added.wishCandidates=[];added.functionPlace={};added.famEnabled=Object.keys(FAM).filter(k=>k!=='common');
+    db.cur=id;ui.famKey='';log('新增病人',`${v.name}｜${stg}`);closeModal();ui.view='patient';render();toast('已新增病人')},
+  'pick-patient':el=>{db.cur=el.dataset.id;ui.famKey='';ui.pend=null;save();render()},
   'stage-modal':()=>stageModal(),
   'stage-save':()=>{const p=P(),s=$('#sgStage').value,dt=$('#sgDate').value||fmtD(now()),prev=stageOf(p);
     const cur=p.stages.find(x=>!x.to);if(cur)cur.to=dt;p.stages.push({stage:s,from:dt,to:null,note:$('#sgNote').value});
@@ -171,17 +195,12 @@ const ACT={
     nw._by=who();nw._at=now().toISOString();p.fam[t]=nw;p.famHist.push({tab:t,by:nw._by,at:nw._at,data:clone(nw)});
     log('熟識人更新',FAM[t].label);ui.famKey='';render();toast('已儲存並留下紀錄')},
   'wish-dom':el=>{ui.wd=el.dataset.d;render()},
-  'wish-toggle':el=>{const p=P(),id=el.dataset.id,i=p.wishes.indexOf(id);if(i>=0){p.wishes.splice(i,1);delete p.place[id]}else p.wishes.push(id);
-    log('願望選取',`${i>=0?'取消':'選取'}：${wishObj(p,id)?.n}`);save();if(el.dataset.close)closeModal();render()},
   'wish-detail':el=>wishDetail(el.dataset.id),
-  'wish-clear':()=>{if(confirm('確定清除全部已選願望？')){const p=P();p.wishes=[];p.place={};log('清除願望','全部');render()}},
-  'wish-custom':()=>{const p=P(),n=$('#cwName').value.trim();if(!n){toast('請輸入願望');return}const w={id:'c'+Date.now(),n,s:$('#cwSub').value.trim(),i:'⭐',rel:[]};p.custom.push(w);p.wishes.push(w.id);log('新增自訂願望',n);render()},
-  'quad-reset':()=>{if(confirm('重設全部象限位置？')){P().place={};log('重設願望象限','');render()}},
   'task-dom':el=>{ui.td=el.dataset.d;render()},
   'task-toggle':el=>{const p=P(),id=+el.dataset.id,i=p.sel.indexOf(id);if(i>=0)p.sel.splice(i,1);else p.sel.push(id);
     log('任務選取',`${i>=0?'取消':'加入'}：${TASK_BY_ID[id].n}`);if(el.dataset.close)closeModal();const y=window.scrollY;render();window.scrollTo({top:y})},
   'task-detail':el=>taskDetail(+el.dataset.id),
-  'task-suggest':()=>{const p=P(),add=[...new Set(p.wishes.flatMap(id=>wishObj(p,id)?.rel||[]))].filter(id=>!p.sel.includes(id));p.sel.push(...add);log('帶入建議任務',`${add.length} 項`);render();toast(`已帶入 ${add.length} 項`)},
+  'task-suggest':()=>{const p=P(),add=relatedItems(p).map(item=>item.id).filter(id=>!p.sel.includes(id));p.sel.push(...add);log('帶入建議任務',`${add.length} 項`);render();toast(`已帶入 ${add.length} 項`)},
   'task-record':()=>{const p=P();p.records.push({at:now().toISOString(),by:who(),stage:stageOf(p),ids:[...p.sel]});log('儲存任務紀錄',`${p.sel.length} 項（${stageOf(p)}，不需復健計畫）`);render();toast('已儲存本次任務紀錄，流程結束')},
   'plan-override':()=>{const p=P();if(!confirm(`${p.name} 目前為「${stageOf(p)}」，確定由治療師選擇產出復健計畫？`))return;p.planOverride=true;log('治療師選擇產出復健計畫',stageOf(p));go('plan')},
   term:el=>{const d=ensureDraft(P()),id=el.dataset.id;d.term[id]=d.term[id]===el.dataset.t?undefined:el.dataset.t;if(!d.term[id])delete d.term[id];save();const y=scrollY;render();scrollTo({top:y})},
@@ -205,37 +224,42 @@ const ACT={
     if(st==='已解鎖'&&was!=='已解鎖')celebrate('🎉 任務解鎖！',TASK_BY_ID[id].n)},
   'pp-partner':el=>{const p=P(),id=+el.dataset.id;p.tasks[id]={st:'未開始',at:'',...(p.tasks[id]||{}),partner:el.dataset.p};log('護照協助夥伴',`${TASK_BY_ID[id].n}：${el.dataset.p}`);passportModal(id)},
   'ad-tab':el=>{ui.ad=el.dataset.k;render()},
-  'ad-toggle':el=>{const id=el.dataset.id;db.taskOff[id]=!db.taskOff[id];if(!db.taskOff[id])delete db.taskOff[id];log('任務啟用／停用',`${TASK_BY_ID[id].n}：${db.taskOff[id]?'停用':'啟用'}`);const y=scrollY;render();scrollTo({top:y})},
+  'ad-toggle':el=>{const id=el.dataset.id;db.taskOff[id]=!db.taskOff[id];if(!db.taskOff[id])delete db.taskOff[id];db.patients.forEach(syncFunctions);log('任務啟用／停用',`${TASK_BY_ID[id].n}：${db.taskOff[id]?'停用':'啟用'}`);const y=scrollY;render();scrollTo({top:y})},
   'ad-edit':el=>{const t=task(+el.dataset.id);openModal(`${mhead('編輯任務 #'+t.id)}<div class="form-grid"><div class="form-field full"><label>任務名稱</label><input id="teN" value="${esc(t.n)}"></div><div class="form-field full"><label>任務說明</label><textarea id="teX">${esc(t.x)}</textarea></div></div><footer><button class="ghost-btn" data-act="close">取消</button><button class="primary" data-act="ad-save" data-id="${t.id}">儲存</button></footer>`)},
   'ad-save':el=>{db.taskEdit[el.dataset.id]={n:$('#teN').value,x:$('#teX').value};log('編輯任務',TASK_BY_ID[el.dataset.id].n);closeModal();render()},
   'phrase-reset':()=>{db.phrases=[...DEFAULT_PHRASES];log('還原預後片語','');render()},
   'log-clear':()=>{if(confirm('確定清除全部操作紀錄？')){db.logs=[];save();render()}},
-  'ex-csv':()=>{const k=['id','d','t','n','x'],h=['#','領域','等級','任務名稱','說明'];const csv='﻿'+h.join(',')+'\n'+TASKS.map(t0=>{const t=task(t0.id);return k.map(c=>'"'+String(t[c]).replaceAll('"','""')+'"').join(',')}).join('\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'life_tasks_150.csv');log('匯出任務庫','CSV')},
-  'ex-json':()=>{download(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),'yk-rehab-demo.json');log('匯出全部資料','JSON')},
-  'reset-demo':()=>{if(confirm('確定重設為初始示範資料？目前所有修改會消失。')){localStorage.removeItem(KEY);db=seed();render()}}
+  'ex-csv':()=>{const k=['id','d','t','n','x'],h=['#','領域','等級','任務名稱','說明'];const csv='﻿'+h.join(',')+'\n'+TASKS.map(t0=>{const t=task(t0.id);return k.map(c=>'"'+String(t[c]).replaceAll('"','""')+'"').join(',')}).join('\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'life_tasks_150.csv');if(!store.blocked)log('匯出任務庫','CSV')},
+  'ex-json':()=>{download(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),'yk-rehab-demo.json');if(!store.blocked)log('匯出全部資料','JSON')},
+  'reset-demo':()=>{if(confirm('確定覆寫本機資料？請先下載原始資料。')){db=DemoCore.migrate(seed(),seed(),Object.keys(FAM).filter(k=>k!=='common'));store.blocked=false;ui.famKey='';ui.pend=null;render();toast('已重設示範資料')}}
 };
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]');if(!el)return;
   if(el.tagName==='INPUT')return;
-  if(el.closest('.wish-card')&&el!==el.closest('.wish-card')&&el.dataset.act!=='wish-detail'&&el.dataset.act!=='wish-toggle')return;
   if(el.dataset.act==='wish-toggle'&&e.target.closest('[data-act="wish-detail"]'))return;
   if(el.dataset.act==='task-toggle'&&e.target.closest('[data-act="task-detail"]'))return;
-  const f=ACT[el.dataset.act];if(f)f(el,e);
+  invokeAction(el,e);
 });
 document.addEventListener('change',e=>{
   const el=e.target;
-  if(el.dataset.act==='stage-cfg'){db.stageCfg[el.dataset.s]=el.checked;log('階段設定',`${el.dataset.s}：${el.checked?'啟用':'停用'}復健計畫`);renderTop();toast('已更新階段設定')}
+  if(el.dataset.act==='stage-cfg')runChange(()=>{if(!canManage())throw new Error('只有管理員可設定階段');db.stageCfg[el.dataset.s]=el.checked;log('階段設定',`${el.dataset.s}：${el.checked?'啟用':'停用'}復健計畫`);renderTop();toast('已更新階段設定')});
 });
 document.addEventListener('input',e=>{
   const el=e.target,k=el.dataset.in;if(!k)return;
-  if(k==='fam')ui.famDraft[el.dataset.k]=el.value;
-  else if(k==='goal'){const d=ensureDraft(P());d[el.dataset.k]=el.value.split('\n').map(x=>x.trim()).filter(Boolean);save()}
-  else if(k==='expect'){ensureDraft(P()).expect[+el.dataset.i].text=el.value;save()}
-  else if(k==='prog'){ensureDraft(P()).prog[+el.dataset.i].text=el.value;save()}
-  else if(k==='phrases'){db.phrases=el.value.split('\n').map(x=>x.trim()).filter(Boolean);save()}
+  if(k==='fam'){if(canFamily(ui.ft))ui.famDraft[el.dataset.k]=el.value;return}
+  runChange(()=>{
+    if(k==='phrases'){if(!canManage())throw new Error('只有管理員可維護片語');db.phrases=el.value.split('\n').map(x=>x.trim()).filter(Boolean)}
+    else {
+      if(!canPlan())throw new Error('此身分不能修改復健計畫');
+      if(k==='goal')ensureDraft(P())[el.dataset.k]=el.value.split('\n').map(x=>x.trim()).filter(Boolean);
+      else if(k==='expect')ensureDraft(P()).expect[+el.dataset.i].text=el.value;
+      else if(k==='prog')ensureDraft(P()).prog[+el.dataset.i].text=el.value;
+    }
+    save();
+  });
 });
-$('#patientSel').addEventListener('change',e=>{db.cur=e.target.value;ui.famKey='';save();render()});
-$('#roleSel').addEventListener('change',e=>{db.role=e.target.value;save();renderTop()});
+$('#patientSel').addEventListener('change',e=>runChange(()=>{db.cur=e.target.value;ui.famKey='';ui.pend=null;$('#book').classList.remove('open');closeModal();save();render()},{sessionOnly:store.blocked}));
+$('#roleSel').addEventListener('change',e=>runChange(()=>{db.role=e.target.value;ui.famKey='';ui.pend=null;$('#book').classList.remove('open');closeModal();save();if(!canView(ui.view))ui.view='patient';render()},{sessionOnly:store.blocked}));
 $('#modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
 $('#bigBtn').onclick=()=>Big.toggle();$('#muteBtn').onclick=()=>{$('#muteBtn').textContent=Snd.toggle()?'🔇':'🔊'};$('#muteBtn').textContent=Snd.isMuted()?'🔇':'🔊';
-load();render();
+/* 載入與初次渲染由 app-access.js 執行，確保所有功能已註冊。 */

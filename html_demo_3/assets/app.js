@@ -22,7 +22,8 @@ const STAGES=['PAC','復健病房','一般復健','OPD'];
 const STAGE_DESC={PAC:'急性後期照護',復健病房:'住院復健',一般復健:'一般復健治療',OPD:'門診追蹤'};
 const ROLES=[
   {k:'PT',label:'物理治療師 PT',name:'王大明'},{k:'OT',label:'職能治療師 OT',name:'林雅婷'},{k:'ST',label:'語言治療師 ST',name:'陳怡君'},
-  {k:'Dietitian',label:'臨床營養師',name:'張雅惠'},{k:'Dr',label:'主治醫師',name:'李志明'},{k:'Nurse',label:'專責護理師',name:'黃佳吟'},{k:'SW',label:'社工／出院準備',name:'周美玲'}
+  {k:'Dietitian',label:'臨床營養師',name:'張雅惠'},{k:'Dr',label:'主治醫師',name:'李志明'},{k:'Nurse',label:'專責護理師',name:'黃佳吟'},{k:'SW',label:'社工／出院準備',name:'周美玲'},
+  {k:'Clerk',label:'書記／行政',name:'建檔示範'},{k:'Admin',label:'管理員',name:'管理示範'}
 ];
 const FAM={
   common:{label:'共同資料',fields:[['basic','基本資料'],['medical','醫療／疾病資訊'],['function','目前功能與行動狀況'],['nutrition','營養／飲食'],['caregiver','照顧者與主要醫療決定者'],['psychosocial','社會心理與家庭'],['premorbid','病前生活／興趣'],['environment','居住環境']]},
@@ -130,8 +131,13 @@ function seed(){
   ].map(([at,by,p,action,detail])=>({at:new Date(at).toISOString(),by,pid:p.id,pname:p.name,action,detail}));
   return{patients:[p1,p2,p3,p4],cur:'P-0001',logs,role:'PT',stageCfg:{PAC:true,復健病房:true,一般復健:false,OPD:false},taskOff:{},taskEdit:{},phrases:[...DEFAULT_PHRASES],dayShift:0};
 }
-function load(){try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!db||!db.patients)db=seed()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+let store;
+function load(){
+  const storage={getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)};
+  store=new DemoCore.Store(storage,KEY);
+  db=store.read(seed(),Object.keys(FAM).filter(k=>k!=='common'));
+}
+function save(){return transaction?true:store.write(db)}
 const P=()=>db.patients.find(p=>p.id===db.cur)||db.patients[0];
 const now=()=>new Date(Date.now()+db.dayShift*DAY);
 const role=()=>ROLES.find(r=>r.k===db.role)||ROLES[0];
@@ -140,9 +146,12 @@ function log(action,detail,p){db.logs.unshift({at:now().toISOString(),by:who(),p
 function stageOf(p){return (p.stages.find(s=>!s.to)||p.stages[p.stages.length-1]).stage}
 const planOn=p=>!!db.stageCfg[stageOf(p)]||p.planOverride;
 const task=id=>{const t=TASK_BY_ID[id];return t?{...t,...(db.taskEdit[id]||{})}:null};
-const wishObj=(p,id)=>WISHES.find(w=>w.id===id)||p.custom.find(w=>w.id===id);
+const wishCatalog=()=>DemoCore.catalog(WISHES,db);
+const wishObj=(p,id)=>wishCatalog().find(w=>w.id===id)||p.custom.find(w=>w.id===id);
+const relatedItems=p=>DemoCore.related(p,wishCatalog(),TASKS.map(t=>t.id),db.taskOff);
+function syncFunctions(p){DemoCore.reconcile(p,relatedItems(p))}
 const qOf=pos=>pos?((pos.x>=50)?(pos.y<50?'tr':'br'):(pos.y<50?'tl':'bl')):null;
-function orderedWishes(p){return p.wishes.map(id=>wishObj(p,id)).filter(Boolean).sort((a,b)=>(QRANK[qOf(p.place[a.id])]??9)-(QRANK[qOf(p.place[b.id])]??9))}
+function orderedWishes(p){return p.wishes.map(id=>wishObj(p,id)).filter(Boolean)}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
 function celebrate(title,sub){$('#celTitle').textContent=title;$('#celSub').textContent=sub||'';const c=$('#celebrate');Snd.win();c.classList.add('show');setTimeout(()=>c.classList.remove('show'),2300)}
 function openModal(html){$('#modal').innerHTML=html;$('#modalBackdrop').classList.add('open')}
@@ -158,13 +167,16 @@ function renderTop(){
   $('#patientSel').innerHTML=db.patients.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}｜${stageOf(x)}</option>`).join('');
   $('#roleSel').innerHTML=ROLES.map(r=>`<option value="${r.k}" ${r.k===db.role?'selected':''}>${r.label}｜${r.name}</option>`).join('');
   $('#nav').innerHTML=NAV.map(n=>n[0]==='|'?'<span class="sep"></span>':`<button class="${ui.view===n[0]?'on':''} ${n[0]==='plan'&&!planOn(p)?'locked':''}" data-act="nav" data-v="${n[0]}">${n[1]}${n[0]==='plan'&&!planOn(p)?' 🔒':''}</button>`).join('');
+  applyAccess();
 }
 function render(){
+  if(!canView(ui.view))ui.view=ui.patientMode?'wishes':'patient';
   renderTop();
   const v=(VIEWS[ui.view]||VIEWS.patient)();
   $('#view').innerHTML=v;
   if(ui.lastView!==ui.view){ui.lastView=ui.view;window.scrollTo({top:0})}
   if(AFTER[ui.view])AFTER[ui.view]();
+  applyViewAccess();
   Snd.view(ui.view);
 }
 function go(v){ui.view=v;ui.pend=null;render()}
@@ -176,7 +188,7 @@ VIEWS.patient=()=>{
   const node=(b,t,dim)=>`<div class="node ${dim?'dim':''}"><b>${b}</b>${t}</div>`;
   return `<div class="hero"><div><div class="eyebrow">PATIENT-CENTERED · 以病人為核心</div><h1>${esc(p.name)}<br><span style="font-size:.55em;color:var(--muted)">目前照護階段：${st}</span></h1>
     <p>病人只有一份主檔與一份熟識人資料；照護階段會隨時間改變並完整保留歷程，依階段決定是否需要建立短／長期復健計畫。</p></div>
-    <div class="actions"><button class="primary" data-act="stage-modal">變更照護階段</button><button class="ghost-btn" data-act="edit-patient">編輯主檔</button></div></div>
+    <div class="actions"><button class="primary" data-act="stage-modal">變更照護階段</button><button class="ghost-btn" data-act="nav" data-v="admin" data-admin="patients">後台建檔／編輯</button></div></div>
   <div class="panel"><div class="section-title"><h3>系統流程（依目前階段自動帶出路徑）</h3><span class="badge ${on?'':'gray'}">${on?'本階段需建立復健計畫':'本階段任務儲存即可'}</span></div>
     <div class="flow">${node('病人主檔',`內部 ID：${p.id}`)}<span class="arrow">→</span>${node('熟識人','所有人都有，跨專業共同填寫')}<span class="arrow">→</span>${node('目前照護階段',`${st}（可隨時間改變）`)}<span class="arrow">→</span>${node('生活復健任務','150 項，所有人都可使用')}<span class="arrow">→</span>${node('是否建立復健計畫？',on?'是 → 短期＋長期＋定期檢討':'否 → 任務儲存即可',!on)}</div>
     <p class="small" style="margin:10px 0 0">各階段是否啟用復健計畫可於「後台管理 → 階段設定」調整${p.planOverride?'；此病人已由治療師選擇產出復健計畫':''}。</p></div>
@@ -193,78 +205,25 @@ VIEWS.patient=()=>{
 };
 
 /* ============ ② 熟識人 ============ */
-VIEWS.familiar=()=>{
-  const p=P(),tab=ui.ft,tabs=[['overview','跨專業總覽'],...Object.entries(FAM).map(([k,v])=>[k,v.label])];
-  const bar=`<div class="tabs">${tabs.map(([k,l])=>`<button class="ghost-btn ${tab===k?'on':''}" data-act="fam-tab" data-k="${k}">${l}${p.fam[k]?' ●':''}</button>`).join('')}</div>`;
-  let body;
-  if(tab==='overview'){
-    body=`<div class="grid2">${Object.entries(FAM).map(([k,v])=>{const d=p.fam[k];return `<div class="panel"><div class="section-title"><h3>${v.label}</h3><button class="ghost-btn" data-act="fam-tab" data-k="${k}">${d?'檢視／更新':'開始填寫'}</button></div>${d?`<p class="small">最後更新：${esc(d._by)}｜${fmtT(d._at)}</p>${v.fields.filter(f=>d[f[0]]).map(f=>`<p><b>${f[1]}：</b>${esc(d[f[0]])}</p>`).join('')}`:'<div class="empty">尚未填寫</div>'}</div>`}).join('')}</div>`;
-  }else{
-    const key=p.id+':'+tab;if(ui.famKey!==key){ui.famKey=key;ui.famDraft={...(p.fam[tab]||{})}}
-    const f=FAM[tab],d=p.fam[tab],hist=p.famHist.filter(h=>h.tab===tab).reverse();
-    body=`<div class="panel"><div class="section-title"><h3>${f.label}</h3><span class="small">${d?`最後更新：${esc(d._by)}｜${fmtT(d._at)}`:'尚未填寫'}</span></div>
-      <div class="notice info">各職類有各自的填寫區；固定欄位仍需由各專業確認，目前為示範欄位。儲存時會記錄填寫者與時間，歷次內容皆保留。</div>
-      <div class="form-grid">${f.fields.map(([k,l])=>`<div class="form-field full"><label>${l}</label><textarea data-in="fam" data-k="${k}">${esc(ui.famDraft[k]||'')}</textarea></div>`).join('')}</div>
-      <div class="actions" style="margin-top:14px"><button class="primary" data-act="fam-save">以「${who()}」身分儲存</button></div></div>
-      <div class="panel"><h3>歷次內容（${hist.length}）</h3>${hist.length?hist.map(h=>`<details style="margin-bottom:8px"><summary><b>${fmtT(h.at)}</b>｜${esc(h.by)}</summary>${f.fields.filter(x=>h.data[x[0]]).map(x=>`<p><b>${x[1]}：</b>${esc(h.data[x[0]])}</p>`).join('')}</details>`).join(''):'<div class="empty">尚無紀錄</div>'}</div>`;
-  }
-  return `<div class="hero"><div><div class="eyebrow">STEP 2 · 熟識人（所有病人皆有）</div><h1>跨專業共同認識病人</h1><p>PT、OT、ST、營養、醫師、護理、社工在同一位病人主檔下各自填寫、共同查看，保留填寫者、更新時間與歷次內容。</p></div></div>${bar}${body}`;
-};
+/* 表單、報表與職類設定集中於 app-admin.js。 */
 
 /* ============ ③ 願望圖卡 ============ */
-VIEWS.wishes=()=>{
-  const p=P(),d=ui.wd;
-  const list=d==='all'?WISHES:WISHES.filter(w=>w.d===d);
-  const card=w=>{const sel=p.wishes.includes(w.id);return `<div class="wish-card ${sel?'sel':''}" data-act="wish-toggle" data-id="${w.id}" style="cursor:pointer">${sel?'<span class="tick">✓</span>':''}<div class="ic" data-act="book-open" data-k="wishes" data-id="${w.id}" title="點圖放大" style="cursor:zoom-in">${w.i||'⭐'}${w.vid?' <span class="badge blue" style="font-size:12px;vertical-align:middle">▶ 示範影片</span>':''}</div><span class="badge">${w.d}｜${esc(w.b||'')}</span><h3>${esc(w.n)}</h3>${w.s?`<div class="sub">${esc(w.s)}</div>`:''}<div class="foot"><span class="small">${w.lv||''}</span><button class="ghost-btn" data-act="wish-detail" data-id="${w.id}">詳情</button></div></div>`};
-  return `<div class="hero"><div><div class="eyebrow">STEP 3 · 願望圖卡（第二層文字即為患者預期目標）</div><h1>${esc(p.name)}想做到什麼？</h1><p>點選圖卡即可選取，可跨領域累積；圖卡下方的第二層文字會成為「患者預期目標」。選不到合適的，也可新增自訂願望。</p></div><div class="panel" style="margin:0"><b>已選 ${p.wishes.length} 項</b></div></div>
-  <div class="tabs"><button class="ghost-btn ${d==='all'?'on':''}" data-act="wish-dom" data-d="all">全部 ${WISHES.length}</button>${DKEYS.map(k=>`<button class="ghost-btn ${d===k?'on':''}" data-act="wish-dom" data-d="${k}">${DOMAINS[k].emoji} ${k}・${DOMAINS[k].sub}（${WISHES.filter(w=>w.d===k).length}）</button>`).join('')}</div>
-  <div class="actions" style="margin-bottom:12px"><button class="secondary" data-act="book-open" data-k="wishes" data-id="${list[0]?.id}">📖 大圖書本閱讀</button></div><div class="wish-grid">${p.custom.map(w=>card({...w,d:'自訂',lv:'自訂願望',b:'病人自己的說法'})).join('')}${list.map(card).join('')}</div>
-  <div class="panel" style="margin-top:18px"><h3>新增自訂願望</h3><div class="form-grid"><div class="form-field"><label>願望（病人的說法）</label><input id="cwName" placeholder="例如：自己走去市場買水果"></div><div class="form-field"><label>第二層文字（預期目標說明）</label><input id="cwSub" placeholder="例如：能在助行器協助下走 200 公尺"></div></div><div class="actions" style="margin-top:12px"><button class="secondary" data-act="wish-custom">＋ 加入並選取</button></div></div>
-  <div class="panel"><div class="section-title"><h3>目前已選願望</h3><div class="actions"><button class="danger" data-act="wish-clear">清除全部</button><button class="primary" data-act="nav" data-v="quad">下一步：願望象限 →</button></div></div><div class="chip-row">${p.wishes.length?p.wishes.map(id=>{const w=wishObj(p,id);return w?`<span class="badge">${w.i||'⭐'} ${esc(w.n)}</span>`:''}).join(''):'<span class="muted">尚未選擇</span>'}</div></div>`;
-};
+/* 初選、最終選取與圖片卡片集中於 app-workflow.js。 */
 
 /* ============ ④ 願望象限（病人點擊／拖曳：重要性 × 急迫性） ============ */
-VIEWS.quad=()=>{
-  const p=P(),ws=p.wishes.map(id=>wishObj(p,id)).filter(Boolean);
-  const chip=(w,st)=>`<div class="qchip ${ui.pend===w.id?'pending':''}" data-wid="${w.id}" ${st||''}><span class="e">${w.i||'⭐'}</span>${esc(w.n)}</div>`;
-  const tray=ws.filter(w=>!p.place[w.id]),onb=ws.filter(w=>p.place[w.id]);
-  const q=(k,c)=>`<div class="q ${c}"><b>${QN[k][0]} ${QN[k][1]}</b>${QN[k][2]}</div>`;
-  return `<div class="hero"><div><div class="eyebrow">STEP 4 · 願望優先順序</div><h1>哪些最重要？哪些最急？</h1><p>請病人（或家屬）把願望圖卡拖曳到右側座標中；手機／平板可先點選圖卡，再點選要放的位置。象限內容（長／短期）暫為示意，仍待與院方討論。</p></div></div>
-  ${ws.length?`<div class="quad-wrap"><div class="panel"><h3>待放置（${tray.length}）</h3><div class="tray" id="tray">${tray.map(w=>chip(w)).join('')||'<span class="small">全部都放好了。把圖卡拖回此處可取消放置。</span>'}</div>${ui.pend?'<p class="notice" style="margin-top:12px">已選取圖卡，請點選右側座標中的位置。</p>':''}<button class="danger" data-act="quad-reset" style="margin-top:12px">重設全部位置</button></div>
-    <div><div class="board-axis-y"><div class="axis-y"><span>高</span><span class="lab">急迫性</span><span>低</span></div><div class="board" id="board"><div class="mid-v"></div><div class="mid-h"></div>${q('tl','tl')}${q('tr','tr')}${q('bl','bl')}${q('br','br')}${onb.map(w=>chip(w,`style="left:${p.place[w.id].x}%;top:${p.place[w.id].y}%"`)).join('')}</div></div><div class="axis-x"><span>低</span><span>重要性</span><span>高</span></div></div></div>
-    <div class="panel" style="margin-top:16px"><h3>排序結果（依象限）</h3>${orderedWishes(p).map((w,i)=>{const k=qOf(p.place[w.id]);return `<div style="padding:6px 0;border-bottom:1px solid var(--line)">${i+1}. ${w.i||'⭐'} <b>${esc(w.n)}</b> ${k?`<span class="badge ${k==='tr'?'':k==='br'?'blue':k==='tl'?'amber':'gray'}">${QN[k][0]} ${QN[k][1]}</span> <span class="small">${QN[k][2]}</span>`:'<span class="badge gray">未放置</span>'}</div>`}).join('')}</div>`
-    :'<div class="panel empty">尚未選擇願望，請先回「③ 願望圖卡」選取。<br><br><button class="primary" data-act="nav" data-v="wishes">前往願望圖卡</button></div>'}
-  <div class="actions" style="justify-content:space-between;margin-top:16px"><button class="ghost-btn" data-act="nav" data-v="wishes">← 返回願望圖卡</button><button class="primary" data-act="nav" data-v="tasks">下一步：選擇生活復健任務 →</button></div>`;
-};
-function setPlace(wid,x,y){const p=P();p.place[wid]={x:Math.round(Math.min(94,Math.max(6,x))),y:Math.round(Math.min(92,Math.max(8,y)))};ui.pend=null;const w=wishObj(p,wid);log('願望象限放置',`${w?.n}→${QN[qOf(p.place[wid])][0]} ${QN[qOf(p.place[wid])][1]}`);save();render()}
-AFTER.quad=()=>{
-  const board=$('#board'),tray=$('#tray');if(!board)return;
-  const inside=(el,x,y)=>{const r=el.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom};
-  document.querySelectorAll('.qchip[data-wid]').forEach(ch=>ch.addEventListener('pointerdown',e=>{
-    e.preventDefault();const wid=ch.dataset.wid,sx=e.clientX,sy=e.clientY;let ghost=null,moved=false;
-    const mv=ev=>{if(!moved&&Math.hypot(ev.clientX-sx,ev.clientY-sy)<6)return;moved=true;
-      if(!ghost){ghost=ch.cloneNode(true);ghost.style.cssText='';ghost.classList.add('ghost');document.body.appendChild(ghost);ch.style.opacity='.3'}
-      ghost.style.left=(ev.clientX-70)+'px';ghost.style.top=(ev.clientY-18)+'px'};
-    const up=ev=>{window.removeEventListener('pointermove',mv);ghost&&ghost.remove();ch.style.opacity='';
-      if(!moved){ui.pend=ui.pend===wid?null:wid;render();return}
-      if(inside(board,ev.clientX,ev.clientY)){const r=board.getBoundingClientRect();setPlace(wid,(ev.clientX-r.left)/r.width*100,(ev.clientY-r.top)/r.height*100)}
-      else if(inside(tray,ev.clientX,ev.clientY)&&P().place[wid]){delete P().place[wid];save();render()}};
-    window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up,{once:true});
-  }));
-  board.addEventListener('click',e=>{if(!ui.pend||e.target.closest('.qchip'))return;const r=board.getBoundingClientRect();setPlace(ui.pend,(e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100)});
-};
+/* 生活功能項目、星等與象限互動集中於 app-workflow.js。 */
 
 /* ============ ⑤ 生活復健任務（150 項；長短期不在此決定） ============ */
 const taskList=()=>TASKS.filter(t=>(ui.td==='all'||t.d===ui.td)&&(ui.tt==='all'||t.t===ui.tt)&&(!ui.tq||(t.n+t.x+t.id).includes(ui.tq)));
 VIEWS.tasks=()=>{
   const p=P(),on=planOn(p),list=taskList();
-  const sugg=[...new Set(p.wishes.flatMap(id=>wishObj(p,id)?.rel||[]))].filter(id=>!p.sel.includes(id));
-  const relCount=id=>p.wishes.filter(w=>(wishObj(p,w)?.rel||[]).includes(id)).length;
+  const relations=relatedItems(p),sugg=relations.map(item=>item.id).filter(id=>!p.sel.includes(id));
+  const relCount=id=>relations.find(item=>item.id===id)?.count||0;
   return `<div class="hero"><div><div class="eyebrow">STEP 5 · 生活復健任務（150 項，所有病人皆可使用）</div><h1>為${esc(p.name)}選擇任務</h1><p>所有照護階段都能使用全部任務。${on?'任務屬於短期或長期，會在下一步「復健計畫」中依此病人的狀況由治療師決定。':'本階段選完任務即可儲存，不需建立復健計畫。'}</p></div><div class="panel" style="margin:0"><b>已選 ${p.sel.length} 項</b></div></div>
   ${sugg.length?`<div class="notice ok">依已選願望，系統建議再加入 <b>${sugg.length}</b> 項相關任務。<button class="secondary" data-act="task-suggest" style="margin-left:10px">一鍵帶入建議任務</button></div>`:''}
   <div class="tabs"><button class="ghost-btn ${ui.td==='all'?'on':''}" data-act="task-dom" data-d="all">全部</button>${DKEYS.map(k=>`<button class="ghost-btn ${ui.td===k?'on':''}" data-act="task-dom" data-d="${k}">${DOMAINS[k].emoji} ${k}</button>`).join('')}</div>
   <div class="filterbar"><input id="tq" placeholder="搜尋任務名稱或說明…" value="${esc(ui.tq)}"><select id="tt"><option value="all">全部等級</option>${Object.entries(TIERS).map(([k,v])=>`<option value="${k}" ${ui.tt===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select><span class="badge">顯示 ${list.length} 項</span><button class="secondary" data-act="book-open" data-k="tasks" data-id="${list[0]?.id}">📖 大圖書本閱讀</button></div>
-  <div class="task-grid">${list.map(t0=>{const t=task(t0.id),sel=p.sel.includes(t.id),off=db.taskOff[t.id],rc=relCount(t.id);return `<div class="task-card ${sel?'sel':''} ${off?'off':''}" data-act="${off?'':'task-toggle'}" data-id="${t.id}" style="cursor:pointer"><div class="top"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span><span class="small">#${t.id}${rc?` ｜ ★ ${rc} 個願望`:''}</span></div><img src="${iconOf(t.id)}" alt="" loading="lazy" data-act="book-open" data-k="tasks" data-id="${t.id}" title="點圖放大" style="cursor:zoom-in"><h4>${esc(t.n)}</h4><p>${esc(t.x)}</p><div class="top"><span class="small">${t.d}${t.p?'｜'+esc(t.p.slice(0,12)):''}</span><button class="ghost-btn" data-act="task-detail" data-id="${t.id}" style="padding:4px 9px;font-size:12px">詳情</button></div>${sel?'<span class="badge" style="position:absolute;top:34px;right:10px">✓ 已選</span>':''}</div>`}).join('')||'<div class="empty">沒有符合的任務</div>'}</div>
+  <div class="task-grid">${list.map(t0=>{const t=task(t0.id),sel=p.sel.includes(t.id),off=db.taskOff[t.id],rc=relCount(t.id);return `<div class="task-card ${sel?'sel':''} ${off?'off':''}" data-act="${off?'':'task-toggle'}" data-id="${t.id}" style="cursor:pointer"><div class="top"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span><span class="small">#${t.id}${rc?` ｜ ${DemoCore.stars(rc)} ${rc} 個願望`:''}</span></div><img src="${iconOf(t.id)}" alt="" loading="lazy" data-act="book-open" data-k="tasks" data-id="${t.id}" title="點圖放大" style="cursor:zoom-in"><h4>${esc(t.n)}</h4><p>${esc(t.x)}</p><div class="top"><span class="small">${t.d}${t.p?'｜'+esc(t.p.slice(0,12)):''}</span><button class="ghost-btn" data-act="task-detail" data-id="${t.id}" style="padding:4px 9px;font-size:12px">詳情</button></div>${sel?'<span class="badge" style="position:absolute;top:34px;right:10px">✓ 已選</span>':''}</div>`}).join('')||'<div class="empty">沒有符合的任務</div>'}</div>
   <div class="panel" style="margin-top:18px"><div class="section-title"><div><h3>${on?'已選任務 '+p.sel.length+' 項':'儲存本次任務紀錄'}</h3><span class="small">${on?'請進入復健計畫，決定每項任務的短／長期。':'一般復健／OPD：選完任務即完成該次紀錄。'}</span></div>
     <div class="actions">${on?`<button class="primary" data-act="nav" data-v="plan" ${p.sel.length?'':'disabled'}>下一步：建立復健計畫 →</button>`:`<button class="ghost-btn" data-act="plan-override">治療師選擇產出復健計畫</button><button class="primary" data-act="task-record" ${p.sel.length?'':'disabled'}>儲存本次任務紀錄（流程結束）</button>`}</div></div>
     ${!on&&p.records.length?`<h4>歷次任務紀錄</h4>${[...p.records].reverse().map(r=>`<div class="log-row"><time>${fmtT(r.at)}｜${esc(r.by)}｜階段：${r.stage}</time>${r.ids.map(id=>esc(TASK_BY_ID[id]?.n)).join('、')}</div>`).join('')}`:''}</div>`;
@@ -274,11 +233,12 @@ AFTER.tasks=()=>{
   $('#tt')?.addEventListener('change',e=>{ui.tt=e.target.value;render()});
 };
 function taskDetail(id){
-  const t=task(id),p=P(),rel=p.wishes.map(w=>wishObj(p,w)).filter(w=>w&&(w.rel||[]).includes(id));
+   const t=task(id),p=P(),rel=p.wishes.map(w=>wishObj(p,w)).filter(w=>w&&(w.rel||[]).includes(id));
   openModal(`${mhead(esc(t.n))}<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><img src="${iconOf(id)}" style="width:120px;height:120px;object-fit:contain" alt=""><div style="flex:1 1 260px"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span> <span class="badge">${t.d}</span> <span class="small">#${id}</span><p style="line-height:1.7">${esc(t.x)}</p>${t.p?`<p class="small">階段：${esc(t.p)}</p>`:''}</div></div>${rel.length?`<p><b>關聯願望：</b>${rel.map(w=>esc(w.n)).join('、')}</p>`:''}<footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="task-toggle" data-id="${id}" data-close="1">${p.sel.includes(id)?'取消選取':'加入已選任務'}</button></footer>`);
 }
 function wishDetail(id){
   const p=P(),w=wishObj(p,id);if(!w)return;
   const ul=a=>a&&a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p class="muted">—</p>';
-  openModal(`${mhead((w.i||'⭐')+' '+esc(w.n))}${w.vid?`<video src="${w.vid}" controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:12px;background:#000;margin-bottom:10px"></video>`:''}<p style="line-height:1.7"><b>第二層文字（預期目標）：</b>${esc(w.s)||'—'}</p>${w.pm?`<h4>需要的能力</h4><p class="small" style="margin:0">姿勢平衡與大動作</p>${ul(w.pm)}<p class="small" style="margin:0">手部功能</p>${ul(w.hf)}<p class="small" style="margin:0">認知與安全知覺</p>${ul(w.cs)}<h4>友善代償技巧與輔具</h4>${ul(w.ad)}<h4>對應任務</h4><div class="chip-row">${(w.rel||[]).map(i=>`<span class="badge">#${i} ${esc(TASK_BY_ID[i]?.n)}</span>`).join('')}</div>`:''}<footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="wish-toggle" data-id="${id}" data-close="1">${p.wishes.includes(id)?'取消選取':'選取此願望'}</button></footer>`);
+  openModal(`${mhead((w.i||'⭐')+' '+esc(w.n))}${w.vid?`<video src="${esc(w.vid)}" controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:12px;background:#000;margin-bottom:10px"></video>`:''}<p style="line-height:1.7"><b>第二層文字（預期目標）：</b>${esc(w.s)||'—'}</p>${w.pm?`<h4>需要的能力</h4><p class="small" style="margin:0">姿勢平衡與大動作</p>${ul(w.pm)}<p class="small" style="margin:0">手部功能</p>${ul(w.hf)}<p class="small" style="margin:0">認知與安全知覺</p>${ul(w.cs)}<h4>友善代償技巧與輔具</h4>${ul(w.ad)}`:''}<h4>對應任務</h4><div class="chip-row">${(w.rel||[]).map(i=>`<span class="badge">#${i} ${esc(TASK_BY_ID[i]?.n)}</span>`).join('')||'尚未對應'}</div><footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="wish-toggle" data-id="${esc(id)}" data-close="1">${p.wishCandidates.includes(id)?'取消初選':'加入初選'}</button></footer>`);
+  applyViewAccess();
 }

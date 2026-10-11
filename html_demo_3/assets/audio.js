@@ -1,7 +1,7 @@
 'use strict';
 /* 音效：沿用甲方學習護照的 BGM（cover/prologue/main/milestone）與合成點擊/成功音 */
 const Snd=(()=>{
-  let muted=localStorage.getItem('yk-muted')==='1',vol=.3,bgm=null,bgmName='',ctx=null,unlocked=false,want='';
+  let muted=DemoCore.readPreference('yk-muted','0')==='1',vol=.3,bgm=null,bgmName='',ctx=null,unlocked=false,want='';
   const MAP={patient:'cover',wishes:'prologue',quad:'prologue',passport:'main'};
   const ac=()=>{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx};
   function stop(){if(bgm){bgm.pause();bgm=null;bgmName=''}}
@@ -16,7 +16,7 @@ const Snd=(()=>{
     click(){if(!muted)tone([700],'sine',0,.1,.2)},
     success(){if(!muted)tone([523.25,659.25,783.99],'triangle',.07,.3,.25)},
     win(){this.success();if(muted||!unlocked)return;const a=new Audio('assets/audio/milestone.mp3');a.volume=vol;a.play().catch(()=>{});setTimeout(()=>{let v=a.volume;const t=setInterval(()=>{v-=.05;if(v<=0){a.pause();clearInterval(t)}else a.volume=v},120)},3500)},
-    toggle(){muted=!muted;localStorage.setItem('yk-muted',muted?'1':'0');muted?stop():(want&&play(want));return muted},
+    toggle(){muted=!muted;const saved=DemoCore.writePreference('yk-muted',muted?'1':'0');muted?stop():(want&&play(want));if(!saved)toast('音效已切換，但偏好設定未保存');return muted},
     isMuted:()=>muted
   };
   document.addEventListener('pointerdown',()=>{if(!unlocked){unlocked=true;if(!muted&&want)play(want)}},{capture:true});
