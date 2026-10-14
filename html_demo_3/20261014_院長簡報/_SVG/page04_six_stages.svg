@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="100%" height="100%" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif">
+<defs>
+<filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/></marker>
+<marker id="arrow-g" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/></marker>
+</defs>
+<rect width="1000" height="480" fill="#ffffff"/>
+<text x="500" y="34" font-size="20" font-weight="700" fill="#0f172a" text-anchor="middle">六個階段：從入院到出院</text>
+<path d="M 80 62 L 920 62" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-g)"/>
+<text x="30" y="66" font-size="13" font-weight="700" fill="#475569" text-anchor="start">入院</text>
+<text x="970" y="66" font-size="13" font-weight="700" fill="#475569" text-anchor="end">出院</text>
+<g filter="url(#shadow)"><rect x="30" y="90" width="140" height="190" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><path d="M 31 130 L 31 98 Q 31 91 38 91 L 162 91 Q 169 91 169 98 L 169 130 Z" fill="#dbeafe"/><rect x="30" y="90" width="140" height="190" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="100.0" y="116" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">① 建檔</text>
+<text x="100.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">個案主檔</text>
+<text x="100.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">照護階段</text>
+<line x1="44" y1="218" x2="156" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="100.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="100.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">護理／行政</text>
+<path d="M 172 185 L 188 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="190" y="90" width="140" height="190" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><path d="M 191 130 L 191 98 Q 191 91 198 91 L 322 91 Q 329 91 329 98 L 329 130 Z" fill="#dbeafe"/><rect x="190" y="90" width="140" height="190" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="260.0" y="116" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">② 認識病人</text>
+<text x="260.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">跨專業共填</text>
+<text x="260.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">熟識人資料</text>
+<line x1="204" y1="218" x2="316" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="260.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="260.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">七個專業</text>
+<path d="M 332 185 L 348 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="350" y="90" width="140" height="190" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/><path d="M 351 130 L 351 98 Q 351 91 358 91 L 482 91 Q 489 91 489 98 L 489 130 Z" fill="#d1fae5"/><rect x="350" y="90" width="140" height="190" rx="8" fill="none" stroke="#10b981" stroke-width="1.5"/></g>
+<text x="420.0" y="116" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">③ 選願望</text>
+<text x="420.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">28 張圖卡</text>
+<text x="420.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">病人自己選</text>
+<line x1="364" y1="218" x2="476" y2="218" stroke="#10b981" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="420.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="420.0" y="262" font-size="13.5" font-weight="700" fill="#047857" text-anchor="middle">病人與家屬</text>
+<path d="M 492 185 L 508 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="510" y="90" width="140" height="190" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/><path d="M 511 130 L 511 98 Q 511 91 518 91 L 642 91 Q 649 91 649 98 L 649 130 Z" fill="#d1fae5"/><rect x="510" y="90" width="140" height="190" rx="8" fill="none" stroke="#10b981" stroke-width="1.5"/></g>
+<text x="580.0" y="116" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">④ 功能象限</text>
+<text x="580.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">重要 × 急迫</text>
+<text x="580.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">病人與家屬拖</text>
+<line x1="524" y1="218" x2="636" y2="218" stroke="#10b981" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="580.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="580.0" y="262" font-size="13.5" font-weight="700" fill="#047857" text-anchor="middle">病人與家屬</text>
+<path d="M 652 185 L 668 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="670" y="90" width="140" height="190" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><path d="M 671 130 L 671 98 Q 671 91 678 91 L 802 91 Q 809 91 809 98 L 809 130 Z" fill="#dbeafe"/><rect x="670" y="90" width="140" height="190" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="740.0" y="116" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">⑤ 選任務</text>
+<text x="740.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">150 項任務</text>
+<text x="740.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">與願望連結</text>
+<line x1="684" y1="218" x2="796" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="740.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="740.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">治療師</text>
+<path d="M 812 185 L 828 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="830" y="90" width="140" height="190" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><path d="M 831 130 L 831 98 Q 831 91 838 91 L 962 91 Q 969 91 969 98 L 969 130 Z" fill="#dbeafe"/><rect x="830" y="90" width="140" height="190" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="900.0" y="116" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">⑥ 計畫與追蹤</text>
+<text x="900.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">長短期目標</text>
+<text x="900.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">版本追蹤</text>
+<line x1="844" y1="218" x2="956" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="900.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
+<text x="900.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">治療師與團隊</text>
+<path d="M 900.0 282 L 900.0 332" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="560" y="335" width="400" height="70" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/></g>
+<text x="760" y="366" font-size="17" font-weight="700" fill="#065f46" text-anchor="middle">生活功能解鎖護照</text>
+<text x="760" y="390" font-size="13" font-weight="400" fill="#334155" text-anchor="middle">病人端：任務闖關＋個人照護計畫</text>
+<path d="M 558 370 L 442 370" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="30" y="335" width="410" height="70" rx="8" fill="#0f172a" stroke="#0f172a" stroke-width="1.5"/></g>
+<text x="235" y="366" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">出院成果（規劃）</text>
+<text x="235" y="390" font-size="12.5" font-weight="400" fill="#e2e8f0" text-anchor="middle">前後比較　目標達成　已解鎖功能　後續建議</text>
+<rect x="30" y="440" width="14" height="14" rx="3" fill="#dbeafe" stroke="#3b82f6"/><text x="52" y="452" font-size="12.5" font-weight="400" fill="#475569" text-anchor="start">醫療團隊操作</text>
+<rect x="170" y="440" width="14" height="14" rx="3" fill="#d1fae5" stroke="#10b981"/><text x="192" y="452" font-size="12.5" font-weight="400" fill="#475569" text-anchor="start">病人與家屬操作</text>
+</svg>

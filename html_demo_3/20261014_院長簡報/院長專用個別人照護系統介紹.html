@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個別化照護系統｜院長報告</title>
+<style>
+  /* ============================================================
+     THEME — set these to the CLIENT's primary colour system.
+     Only --brand / --brand-dark / --brand-light / --accent
+     normally need changing per client.
+     ============================================================ */
+  :root{
+    --brand:#0f766e;          /* client primary (titles, bullets, tags) */
+    --brand-dark:#115e59;      /* darker shade (headings, cover gradient) */
+    --brand-light:#e3f4f1;     /* pale tint (table header) */
+    --accent:#f59e0b;          /* sub-title bar + progress-bar fill */
+    --vendor-accent:#6a3fa6;   /* vendor (昕力紫) — used only on the cover */
+    --ink:#1f2937;
+    --sub:#5c7377;
+    --line:#dbe4e4;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:#20303a;
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+
+  /* ===== Stage: native 1920x1080 canvas, anchored top-left, contained ===== */
+  #stage{position:fixed;inset:0;overflow:hidden;}
+  #deck{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;}
+  .slide{
+    position:absolute;inset:0;background:#fff;
+    padding:70px 104px 150px 104px;
+    display:none;flex-direction:column;
+  }
+  .slide.active{display:flex;}
+
+  /* ===== Slide header ===== */
+  .s-kicker{font-size:24px;letter-spacing:4px;color:var(--brand);font-weight:700;margin-bottom:14px;}
+  .s-title{font-size:66px;line-height:1.14;font-weight:800;color:var(--brand-dark);letter-spacing:1px;}
+  .s-title.small{font-size:52px;}
+  .s-sub{
+    margin-top:26px;font-size:32px;line-height:1.45;color:var(--ink);font-weight:600;
+    border-left:9px solid var(--accent);padding-left:24px;
+  }
+
+  .s-body{margin-top:46px;flex:1;min-height:0;display:flex;flex-direction:column;}
+
+  /* points: each bullet is a full-width row that stretches to fill height */
+  ul.points{list-style:none;flex:1;display:flex;flex-direction:column;}
+  ul.points > li{
+    flex:1;display:grid;grid-template-columns:20px 1fr;column-gap:26px;
+    align-content:center;align-items:start;
+    padding:24px 6px;border-bottom:2px solid var(--line);
+  }
+  ul.points > li:last-child{border-bottom:0;}
+  ul.points > li .mk{width:20px;height:20px;border-radius:5px;background:var(--brand);margin-top:11px;}
+  ul.points > li .tx{font-size:30px;line-height:1.5;color:var(--ink);}
+  ul.points b{color:var(--brand-dark);}
+
+  .s-note{margin-top:14px;font-size:17px;line-height:1.5;color:var(--sub);}
+  /* Optional presenter cue for the next slide, pinned above the footer. */
+  .s-next-hint{
+    position:absolute;right:44px;bottom:58px;
+    font-size:17px;line-height:1.4;
+    color:var(--sub);opacity:.65;
+    letter-spacing:.5px;
+  }
+
+  /* table: fills width and height, rows share the space evenly */
+  table.grid{width:100%;height:100%;border-collapse:collapse;font-size:27px;}
+  table.grid th,table.grid td{border:1px solid var(--line);padding:18px 26px;text-align:left;vertical-align:middle;}
+  table.grid th{background:var(--brand-light);color:var(--brand-dark);font-weight:700;font-size:26px;}
+  table.grid td.n{text-align:center;font-weight:800;color:var(--brand);white-space:nowrap;font-size:30px;}
+
+  /* multi-screenshot grid (2x2) */
+  .shots{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:28px 32px;}
+  .shots figure{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f2f6f6;min-height:0;}
+  .shots img{flex:1;width:100%;min-height:0;object-fit:cover;object-position:top left;display:block;}
+  .shots figcaption{flex:none;font-size:20px;line-height:1.4;padding:14px 18px;color:var(--sub);background:#fff;border-top:1px solid var(--line);}
+
+  .shots.n2{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);align-items:center}
+  .shots.n3{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}
+  .shots.n2 figure,.shots.n3 figure{height:auto;max-height:100%}
+  .shots.n2 img,.shots.n3 img{flex:none;height:auto;object-fit:contain}
+  /* single screenshot / diagram — image hugs its own size, no empty frame */
+  .shot-one{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin-top:8px;}
+  .shot-one img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.12);}
+
+  /* media slides: trim chrome so the image gets the most possible area */
+  .slide--media{padding:50px 60px 112px 60px;}
+  .slide--media .s-title,.slide--media .s-title.small{font-size:40px;}
+  .slide--media .s-kicker{margin-bottom:8px;}
+  .slide--media .s-sub{font-size:22px;margin-top:12px;line-height:1.4;}
+  .slide--media .s-body{margin-top:14px;}
+  .slide--media .s-foot{bottom:56px;}
+  /* bare media slide: image is self-titled — keep only the kicker as a progress marker */
+  .slide--bare{padding:36px 44px 104px 44px;}
+  .slide--bare .s-kicker{margin-bottom:0;}
+  .slide--bare .s-body{margin-top:8px;}
+
+  /* video slide (16:9) — poster + play button; plays inline over http, opens YouTube over file:// */
+  .video-wrap{flex:1;min-height:0;margin-top:8px;display:flex;align-items:center;justify-content:center;}
+  .video-box{position:relative;height:100%;aspect-ratio:16/9;max-width:100%;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.16);background:#000;cursor:pointer;}
+  .video-box .vposter{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .video-box .vplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:84px;border-radius:18px;background:rgba(220,30,30,.92);transition:background .15s;}
+  .video-box:hover .vplay{background:#e60000;}
+  .video-box .vplay::after{content:"";position:absolute;top:50%;left:52%;transform:translate(-50%,-50%);width:0;height:0;border-style:solid;border-width:18px 0 18px 30px;border-color:transparent transparent transparent #fff;}
+  .video-box .vcap{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;padding:12px 20px;font-size:20px;letter-spacing:.5px;text-align:left;}
+  .video-box.playing{cursor:default;}
+  .video-box.playing .vposter,.video-box.playing .vplay,.video-box.playing .vcap{display:none;}
+  .video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+  /* ===== Cover ===== */
+  .slide.cover{
+    background:linear-gradient(118deg,#0b3b38 0%,var(--brand-dark) 46%,var(--brand) 100%);
+    color:#fff;justify-content:center;padding:120px 130px 150px 130px;
+  }
+  .slide.cover .cover-logos{position:absolute;top:70px;left:130px;right:130px;display:flex;align-items:center;justify-content:space-between;}
+  .slide.cover .cover-logos .client{height:104px;width:auto;display:block;}
+  .slide.cover .cover-logos .vendor{height:36px;width:auto;display:block;filter:brightness(0) invert(1);opacity:.8;}
+  /* single-logo cover: one mark, upper-left, white */
+  .slide.cover .cover-logos--one{justify-content:flex-start;}
+  .slide.cover .cover-logos--one .client{height:44px;filter:brightness(0) invert(1);opacity:.92;}
+  .slide.cover .s-title{color:#fff;font-size:62px;line-height:1.24;margin-top:8px;}
+  .slide.cover .s-title .dt{display:block;margin-top:16px;font-size:46px;font-weight:600;letter-spacing:8px;color:#e6eefc;}
+  .slide.cover .s-sub{color:#eafcff;border-left-color:#8fe0a0;font-size:36px;}
+  .slide.cover .cover-meta{margin-top:64px;display:flex;flex-direction:column;gap:22px;font-size:27px;line-height:1.4;color:#eafcff;}
+  .slide.cover .cover-meta span b{color:#fff;}
+  .slide.cover .cover-meta .date{margin-top:16px;font-size:24px;color:#cddcea;letter-spacing:1px;}
+
+  /* ===== Footer (inside slide) ===== */
+  /* on screen: pinned flush above the progress bar (JS keeps #chapters at the slide's bottom edge).
+     @media print overrides bottom back to 66px so it clears the static chapter bar in the PDF. */
+  .s-foot{
+    position:absolute;left:0;right:0;bottom:6px;height:46px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;border-top:1px solid var(--line);
+    font-size:24px;font-weight:600;color:#3f4a4d;
+  }
+  .slide.cover .s-foot{border-top-color:rgba(255,255,255,.3);color:#eef8fa;}
+
+  /* corner vendor logo, page 2 onward */
+  .deck-logo{position:absolute;top:34px;right:40px;height:23px;width:auto;opacity:.5;z-index:3;pointer-events:none;}
+
+  /* ===== HUD (on-screen bottom bar) ===== */
+  #hud{
+    position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:14px;
+    padding:3px 9px;background:rgba(0,0,0,.4);font-size:12px;color:#dfeaea;line-height:1;user-select:none;
+  }
+  #hud button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:5px;padding:3px 10px;cursor:pointer;font-size:12px;line-height:1;}
+  #hud .hint{opacity:.7;}
+
+  /* ===== YouTube-style chaptered progress bar (segments ∝ score) ===== */
+  #chapters{position:fixed;left:0;right:0;bottom:0;display:flex;gap:3px;padding:4px 8px;background:rgba(0,0,0,.62);user-select:none;}
+  .chap{position:relative;flex-grow:var(--w);flex-shrink:0;flex-basis:auto;background:rgba(255,255,255,.14);border-radius:4px;overflow:hidden;padding:3px 10px;white-space:nowrap;cursor:pointer;}
+  .chap .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(126,224,160,.38);transition:width .35s ease;}
+  .chap.done{background:rgba(126,224,160,.20);}
+  .chap.current{background:rgba(255,255,255,.26);}
+  .chap.current .fill{background:rgba(142,240,174,.5);}
+  .chap .lbl{position:relative;z-index:1;display:block;font-size:15px;line-height:20px;font-weight:600;color:rgba(255,255,255,.82);}
+  .chap.current .lbl{color:#fff;font-weight:800;}
+  .chap.done .lbl{color:rgba(255,255,255,.95);}
+  .chap .lbl .sc{font-weight:700;margin-left:4px;opacity:.8;}
+  .chap .lbl .pos{margin-left:8px;font-weight:800;color:#9dffbd;}
+
+  /* per-slide static copy of the chapter bar — only for print/PDF */
+  .s-chapters{display:none;position:absolute;left:0;right:0;bottom:0;gap:5px;padding:9px 18px;background:#20303a;}
+  .s-chapters .chap{border-radius:5px;padding:6px 16px;}
+  .s-chapters .chap .lbl{font-size:23px;line-height:1.25;}
+  .s-chapters .chap .lbl .sc{margin-left:8px;}
+  .s-chapters .chap .lbl .pos{margin-left:10px;}
+
+  @media print{
+    @page{ size:1920px 1080px; margin:0; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    body{overflow:visible;background:#fff;}
+    #hud,#chapters{display:none!important;}
+    #stage{position:static;}
+     #deck{transform:none!important;box-shadow:none;position:static;width:auto;height:auto;}
+     .slide{display:flex!important;position:relative;width:1920px;height:1080px;page-break-after:always;}
+     .s-foot{bottom:66px;}
+     .s-next-hint{bottom:118px;}
+     .s-chapters{display:flex!important;}
+    .video-box iframe{display:none;}
+  }
+
+  /* ===== v2 override: larger type, filled space ===== */
+  .slide{background:
+    radial-gradient(circle at 96% 8%,rgba(15,118,110,.10) 0,rgba(15,118,110,0) 34%),
+    radial-gradient(circle at 4% 96%,rgba(245,158,11,.10) 0,rgba(245,158,11,0) 30%),#fff;}
+  .s-kicker{font-size:32px;margin-bottom:16px;}
+  .s-title{font-size:86px;}
+  .s-title.small{font-size:70px;}
+  .s-sub{font-size:44px;margin-top:28px;border-left-width:12px;}
+  .s-body{margin-top:40px;}
+  ul.points > li{grid-template-columns:28px 1fr;column-gap:34px;padding:14px 10px;}
+  ul.points > li .mk{width:28px;height:28px;border-radius:7px;margin-top:14px;}
+  ul.points > li .tx{font-size:44px;line-height:1.45;}
+  table.grid{font-size:40px;}
+  table.grid th{font-size:36px;}
+  table.grid td{padding:18px 34px;}
+  .s-next-hint{font-size:24px;}
+  .s-foot{font-size:26px;}
+  .slide--media{padding:44px 56px 82px 56px;}
+  .slide--media .s-title,.slide--media .s-title.small{font-size:62px;}
+  .slide--media .s-sub{font-size:34px;margin-top:12px;}
+  .slide--media .s-kicker{font-size:28px;}
+  .slide--bare .s-kicker{font-size:30px;}
+  .shots figcaption{font-size:28px;padding:12px 20px;}
+  .shots.n2 figure,.shots.n3 figure{align-self:center}
+  .take{flex:none;margin-top:16px;padding:16px 30px;border-radius:12px;background:var(--brand-light);border-left:12px solid var(--accent);
+    font-size:38px;line-height:1.35;font-weight:700;color:var(--brand-dark);}
+  .slide.cover{background:linear-gradient(90deg,rgba(11,63,59,.97) 0%,rgba(13,86,80,.88) 42%,rgba(15,118,110,.18) 100%),url("_SVG/cover_bg.svg") center/cover no-repeat;}
+  .slide.cover .s-title{font-size:112px;}
+  .slide.cover .s-title .dt{font-size:70px;letter-spacing:12px;}
+  .slide.cover .s-sub{font-size:46px;max-width:960px;}
+  .slide.cover .cover-meta{font-size:36px;gap:20px;margin-top:50px;}
+  .slide.cover .cover-meta .date{font-size:30px;}
+  .slide.cover .cover-logos .client{height:120px;background:#fff;padding:14px 28px;border-radius:16px;box-sizing:border-box;box-shadow:0 6px 22px rgba(0,0,0,.25);}
+  .slide.cover .cover-logos .vendor{height:46px;opacity:.95;}
+  .slide.cover .s-foot{font-size:26px;}
+  .slide--media{padding-bottom:116px;}
+  .slide--bare{padding-bottom:116px;}
+  .slide.cover .s-title{font-size:96px;margin-top:70px;}
+  table.grid.dense{font-size:32px;} table.grid.dense th{font-size:30px;} table.grid.dense td{padding:12px 28px;}
+  .slide:has(table.grid.dense) .s-title{font-size:72px;} .slide:has(table.grid.dense) .s-sub{font-size:36px;margin-top:16px;} .slide:has(table.grid.dense) .s-body{margin-top:24px;}
+  .slide.cover .s-title .dt{font-size:62px;}
+  .slide.cover{padding-top:200px;}
+  .shot-wrap{flex:1;min-height:0;display:flex;gap:36px;align-items:stretch;}
+  .shot-wrap .shot-one{flex:0 1 auto;margin-top:0;}
+  .shot-wrap .aside{flex:1;display:flex;align-items:center;padding:34px 38px;border-radius:14px;background:var(--brand-light);border-left:14px solid var(--accent);
+    font-size:46px;line-height:1.45;font-weight:800;color:var(--brand-dark);}
+  .shot-one img.plain{border:0;box-shadow:none;border-radius:0;}
+  @media print{ .slide{background-color:#fff;} }
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck"></div></div>
+<div id="chapters"></div>
+<div id="hud">
+  <button id="prev">◀ 上一頁</button>
+  <span id="counter">1 / 1</span>
+  <button id="next">下一頁 ▶</button>
+  <span class="hint">PgUp / PgDn · ↑ / ↓ · 空白鍵 · 滑鼠滾輪 · 方向鍵</span>
+</div>
+
+<script>
+/* ============================================================
+   DECK META — fill per project
+   ============================================================ */
+const DECK = {
+  footerName:  "個別化照護系統",
+  footerOrg:   "院長報告",
+  overviewLabel: "封面",
+  cornerLogo:  "",
+  coverLogos:  ["yg_logo.png","tpi_logo.png"],
+  showWeights: false,
+};
+
+const CHAPTERS = [
+  { key:'c0', label:'開場與背景' },
+  { key:'c1', label:'六個階段' },
+  { key:'c2', label:'病人端與出院' },
+  { key:'c3', label:'保障與進度' },
+  { key:'c4', label:'結語與問答' },
+];
+
+const SLIDES = [
+  { type:"cover", item:"all",
+    title:"個別化照護系統<span class=\"dt\">院長報告</span>",
+    sub:"從入院到出院，把「病人想做什麼」變成「團隊每天要練什麼」",
+    cover:[
+      "<b>對象</b>：主管機關　<b>報告人</b>：院長",
+      "<b>時間</b>：10 分鐘",
+      "本簡報資料皆為示範資料，系統目前為展示版",
+    ],
+    dateline:"2026/10/14" },
+
+  { type:"shot", plain:true, item:"c0", kicker:"開場",
+    title:"一套系統，連起入院到出院",
+    sub:"病人的願望，變成團隊每天要練的事",
+    img:"_SVG/p02_open_flow.svg" },
+
+  { type:"shot", plain:true, item:"c0", kicker:"為什麼需要",
+    title:"四個現況問題，四個系統作法",
+    sub:"從「醫療人員單方訂定」改為「病人先說想要什麼」",
+    img:"_SVG/p03_problem_solution.svg" },
+
+  { type:"shot", bare:true, item:"c1", kicker:"六個階段　總覽",
+    img:"_SVG/page04_six_stages.svg" },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ①　入院建檔",
+    title:"建立個案主檔",
+    sub:"一位病人一份主檔，轉換階段不覆蓋舊資料",
+    img:"_SVG/p05_stage1_files.svg" },
+
+  { type:"shots", item:"c1", kicker:"階段 ①　系統畫面", title:"個案主檔與照護階段歷程", take:"病人轉換階段時，系統新增一筆歷程，舊資料不覆蓋", sub:"變更階段時新增歷程，不覆蓋舊階段",
+    shots:[["_screens/s1_patient.png","① 個案主檔：基本資料、識別碼、照護階段歷程"],["_screens/s1b_stage_modal.png","變更照護階段：新增歷程，不覆蓋舊階段"]] },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ②　認識病人",
+    title:"熟識人資料：七個專業共填",
+    sub:"各專業不必重複問病人同樣的問題",
+    img:"_SVG/p07_stage2_hub.svg" },
+
+  { type:"shot", item:"c1", kicker:"階段 ②　系統畫面", title:"熟識人：跨專業總覽", take:"七個專業各填各的欄位；每次修改都留下填寫者與時間", sub:"共同資料與各專業區塊並列，每區塊標示填寫者與時間",
+    img:"_screens/s2_familiar.png" },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ③　選願望",
+    title:"28 張願望圖卡",
+    sub:"先初選，再與治療師共同確認最終願望",
+    img:"_SVG/p09_stage3_cards.svg" },
+
+  { type:"shots", item:"c1", kicker:"階段 ③　系統畫面", title:"願望圖卡：大圖、大字", take:"病人用大圖、大字自己選，長者也能操作", sub:"已加入初選的卡片以綠框標示；可看單張詳情",
+    shots:[["_screens/s3_wishes.png","③ 願望圖卡：病人點選"],["_screens/s3b_wish_detail.png","願望詳情：預期目標與示範內容"]] },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ④　生活功能象限",
+    title:"生活功能象限：先做重要又急迫的事",
+    sub:"由最終願望帶出生活功能項目，病人與家屬放入四個象限",
+    img:"_SVG/p11_quad.svg" },
+
+  { type:"shot", item:"c1", kicker:"階段 ④　系統畫面", title:"生活功能象限：重要性 × 急迫性", take:"Q1「重要且急迫」暫定短期優先，最後由治療師決定", sub:"星等代表願望交集，不代表能力或意願分數",
+    img:"_screens/s4_quad_placed.png" },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ⑤　選任務",
+    title:"一個願望，拆成多個生活任務",
+    sub:"150 項任務，所有階段的病人都可以使用",
+    img:"_SVG/p12_stage5_tasks.svg" },
+
+  { type:"shot", item:"c1", kicker:"階段 ⑤　系統畫面", title:"生活復健任務：150 項任務庫", take:"一個願望拆成多個任務；150 項任務所有階段共用", sub:"每張任務卡標示銅、銀、金級與所屬階段",
+    img:"_screens/s5_tasks.png" },
+
+  { type:"shot", plain:true, item:"c1", kicker:"階段 ⑥　計畫與追蹤",
+    title:"治療師訂出完整復健計畫",
+    sub:"願望變成目標，目標變成每天的任務",
+    img:"_SVG/p13_stage6_plan.svg" },
+
+  { type:"shots", item:"c1", kicker:"階段 ⑥　系統畫面", title:"復健計畫：提醒與 AI 草稿", sub:"預期目標由願望帶入；預後目標可由 AI 產生草稿",
+    take:"AI 草稿標示標籤，專業人員修改後才儲存",
+    shots:[["_screens/s6_plan.png","檢討與修訂提醒、患者預期目標"],["_screens/s6c_plan_ai.png","預後目標：預設片語與 AI 草稿（需治療師確認）"]] },
+
+  { type:"shots", item:"c1", kicker:"階段 ⑥　系統畫面", title:"儲存新版本與版本歷程", sub:"修訂原因必填，v1、v2、v3 皆保留",
+    take:"每次儲存都是新版本，修訂原因必填",
+    shots:[["_screens/s6e_commit_modal.png","儲存為新版本：必填修訂原因"],["_screens/s6d_versions.png","版本歷程：v1、v2、v3 皆保留"]] },
+
+  { type:"shot", item:"c1", kicker:"階段 ⑥　計畫與追蹤",
+    title:"每次儲存都是新版本",
+    sub:"舊版本不會消失；系統自動提醒 80 天修訂",
+    img:"_SVG/page11_plan_tracking.svg" },
+
+  { type:"shot", item:"c1", kicker:"階段 ⑥　系統畫面", title:"版本比較：標示「已變更」", take:"每次儲存都是新版本，舊版不消失，差異一目了然", sub:"可檢視各版本內容與差異",
+    img:"_screens/s6f_ver_diff.png" },
+
+  { type:"shot", item:"c2", kicker:"病人端",
+    title:"生活功能解鎖護照",
+    sub:"階段 ⑥ 之後，病人拿到自己的護照，貫穿住院期間直到出院",
+    img:"_SVG/page12_life_passport.svg" },
+
+  { type:"shots", item:"c2", kicker:"病人端　系統畫面", title:"護照 1.0 與 2.0", take:"病人與家屬看同一份資料，進度一目了然", sub:"病人與家屬看同一份資料，進度一目了然",
+    shots:[["_screens/s7_passport1.png","護照 1.0：獎盃櫃與成就徽章"],["_screens/s7b_passport_task.png","點任務卡：更新狀態與協助夥伴"],["_screens/s7c_passport2.png","護照 2.0：我的願望、目標與任務進度"]] },
+
+  { type:"shot", plain:true, item:"c2", kicker:"病人端",
+    title:"護照對三方的好處",
+    sub:"病人、家屬、團隊都看同一份進度",
+    img:"_SVG/p15_passport_benefit.svg" },
+
+  { type:"shot", plain:true, item:"c2", kicker:"出院",
+    title:"出院：成果帶得走",
+    sub:"已有的功能先帶走，其餘列入規劃",
+    img:"_SVG/p14_discharge.svg" },
+
+  { type:"shot", plain:true, item:"c3", kicker:"品質與安全",
+    title:"四項品質與安全保障",
+    sub:"可追溯、不覆蓋、人為把關、可串接",
+    img:"_SVG/p24_quality.svg" },
+
+  { type:"shot", item:"c3", kicker:"品質與安全　系統畫面", title:"後台管理：操作紀錄", take:"誰、何時、做了什麼，全部可追溯", sub:"計畫新版本、AI 草稿、階段變更、熟識人更新，皆有紀錄",
+    img:"_screens/s8_audit.png" },
+
+  { type:"shot", plain:true, item:"c3", kicker:"目前進度",
+    title:"現況：展示版",
+    sub:"如實報告目前的系統狀態",
+    img:"_SVG/p26_status.svg" },
+
+  { type:"shot", plain:true, item:"c3", kicker:"後續規劃",
+    title:"四步走向正式上線",
+    sub:"展示版 → 欄位確認 → 正式上線 → 成果分析",
+    img:"_SVG/p27_roadmap.svg" },
+
+  { type:"shot", item:"c3", kicker:"成果分析　系統畫面（示範）",
+    title:"成果分析：雷達圖與群體統計",
+    sub:"個人看雷達圖，群體看統計；以示範資料即時計算",
+    take:"個人六大領域雷達圖，加上全體病人各領域解鎖、階段與願望類別統計",
+    img:"_screens/s9_analytics.png" },
+
+  { type:"shot", plain:true, item:"c4", kicker:"院長結語",
+    title:"不是多一張表單",
+    sub:"讓病人從入院第一天，就說出想回到什麼樣的生活",
+    img:"_SVG/p28_closing.svg" },
+
+  { type:"shot", plain:true, item:"c4", kicker:"附錄",
+    title:"預期提問與回答",
+    sub:"五個常見問題",
+    img:"_SVG/p29_qa.svg" },
+];
+
+/* ============================================================
+   ENGINE — no need to edit below
+   ============================================================ */
+const W = c => Number(c.weight ?? c.score ?? 1);
+const ITEMS = {}; CHAPTERS.forEach(c => ITEMS[c.key] = { label:c.label, weight:W(c) });
+ITEMS.all = { label:DECK.overviewLabel || "", weight:0 };
+CHAPTERS.forEach(c => { c.idxs = SLIDES.map((s,i)=>s.item===c.key?i:-1).filter(i=>i>=0); });
+
+function chapLabel(c, extra){
+  return `${c.label}`
+    + (DECK.showWeights ? `<span class="sc">${W(c)}</span>` : '')
+    + (extra || '');
+}
+function chapBarHTML(slideIdx){
+  const curCi = CHAPTERS.findIndex(c => c.key === SLIDES[slideIdx].item);
+  return CHAPTERS.map((c, ci) => {
+    let fill = 0, cls = '', extra = '';
+    if (curCi === -1) {}
+    else if (ci < curCi) { fill = 1; cls = 'done'; extra = `<span class="pos">✓</span>`; }
+    else if (ci === curCi) { cls = 'current'; fill = (c.idxs.indexOf(slideIdx) + 1) / c.idxs.length;
+      extra = `<span class="pos">${c.idxs.indexOf(slideIdx) + 1}/${c.idxs.length}</span>`; }
+    return `<div class="chap ${cls}" style="flex-grow:${W(c)}"><span class="fill" style="width:${fill*100}%"></span><span class="lbl">${chapLabel(c, extra)}</span></div>`;
+  }).join('');
+}
+
+const deck = document.getElementById('deck');
+SLIDES.forEach((s, i) => {
+  const it = ITEMS[s.item] || ITEMS.all;
+  const el = document.createElement('section');
+  el.className = 'slide'
+    + (s.type === 'cover' ? ' cover' : '')
+    + (s.type === 'shot' || s.type === 'shots' || s.type === 'video' ? ' slide--media' : '')
+    + (s.bare ? ' slide--bare' : '');
+  let inner = '';
+  if (s.type === 'cover') {
+    const lg = DECK.coverLogos || [];
+    if (lg.length >= 2)
+      inner += `<div class="cover-logos"><img class="client" src="${lg[0]}" alt=""><img class="vendor" src="${lg[1]}" alt=""></div>`;
+    else if (lg.length === 1)
+      inner += `<div class="cover-logos cover-logos--one"><img class="client" src="${lg[0]}" alt=""></div>`;
+    inner += `<h1 class="s-title">${s.title}</h1>`;
+    inner += `<div class="s-sub">${s.sub}</div>`;
+    inner += `<div class="cover-meta">${(s.cover||[]).map(c=>`<span>${c}</span>`).join('')}${s.dateline?`<span class="date">${s.dateline}</span>`:''}</div>`;
+  } else {
+    inner += `<div class="s-kicker">${s.kicker||''}</div>`;
+    if (!s.bare) {
+      inner += `<h2 class="s-title${(s.title||'').length>22?' small':''}">${s.title}</h2>`;
+      inner += `<div class="s-sub">${s.sub||''}</div>`;
+    }
+    inner += `<div class="s-body">`;
+    if (s.type === 'points') {
+      inner += `<ul class="points">${s.points.map(p=>`<li><span class="mk"></span><div class="tx">${p}</div></li>`).join('')}</ul>`;
+    } else if (s.type === 'table') {
+      inner += `<table class="grid${s.table.rows.length>=5?' dense':''}"><thead><tr>${s.table.head.map((h,idx)=>`<th${idx===1&&!s.table.plain?' style="text-align:center"':''}>${h}</th>`).join('')}</tr></thead><tbody>`;
+      inner += s.table.rows.map(r=>s.table.plain
+        ? `<tr><td><b>${r[0]}</b></td>${r.slice(1).map(c=>`<td>${c}</td>`).join('')}</tr>`
+        : `<tr><td>${r[0]}</td><td class="n">${r[1]}</td>${r.slice(2).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+      inner += `</tbody></table>`;
+    } else if (s.type === 'shots') {
+      inner += `<div class="shots n${s.shots.length}">${s.shots.map(sh=>`<figure><img src="${sh[0]}" alt=""><figcaption>${sh[1]}</figcaption></figure>`).join('')}</div>`;
+    } else if (s.type === 'shot') {
+      if (s.take) inner += `<div class="shot-wrap"><div class="shot-one"><img src="${s.img}" alt=""></div><div class="aside">${s.take}</div></div>`;
+      else inner += `<div class="shot-one"><img${s.plain?' class="plain"':''} src="${s.img}" alt=""></div>`;
+    }
+    if (s.take && s.type !== 'shot') { inner += `<div class="take">${s.take}</div>`;
+    }
+    if (false) {
+    } else if (s.type === 'video') {
+      inner += `<div class="video-wrap"><button class="video-box" data-vid="${s.videoId}"><img class="vposter" src="${s.poster}" alt=""><span class="vplay"></span><span class="vcap">播放操作影片　·　https://youtu.be/${s.videoId}</span></button></div>`;
+    }
+     inner += `</div>`;
+     if (s.note) inner += `<div class="s-note">${s.note}</div>`;
+   }
+   if (s.nextHint) inner += `<div class="s-next-hint">${s.nextHint}</div>`;
+   const footLabel = s.item === 'all'
+    ? it.label
+    : (DECK.showWeights ? `${it.label}（配分 ${it.weight}）` : it.label);
+  const footMeta = [String(i+1).padStart(2,'0') + ' / ' + String(SLIDES.length).padStart(2,'0'),
+                    DECK.footerName, DECK.footerOrg].filter(Boolean).join('　·　');
+  inner += `<div class="s-foot"><span>${footLabel}</span><span>${footMeta}</span></div>`;
+  if (s.type !== 'cover' && DECK.cornerLogo) inner += `<img class="deck-logo" src="${DECK.cornerLogo}" alt="">`;
+  inner += `<div class="s-chapters">${chapBarHTML(i)}</div>`;
+  el.innerHTML = inner;
+  deck.appendChild(el);
+});
+
+deck.addEventListener('click', e => {
+  const box = e.target.closest('.video-box');
+  if (!box || box.classList.contains('playing')) return;
+  const id = box.dataset.vid;
+  if (location.protocol === 'http:' || location.protocol === 'https:') {
+    const f = document.createElement('iframe');
+    f.src = `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&autoplay=1`;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    box.appendChild(f); box.classList.add('playing');
+  } else {
+    window.open(`https://www.youtube.com/watch?v=${id}`, '_blank', 'noopener');
+  }
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+const counter = document.getElementById('counter');
+const chapWrap = document.getElementById('chapters');
+const hudEl = document.getElementById('hud');
+let cur = 0;
+
+CHAPTERS.forEach((c, ci) => {
+  const seg = document.createElement('div');
+  seg.className = 'chap';
+  seg.style.setProperty('--w', W(c));
+  seg.style.flexGrow = W(c);
+  seg.innerHTML = `<span class="fill"></span><span class="lbl"></span>`;
+  seg.addEventListener('click', () => { if (c.idxs.length) go(c.idxs[0]); });
+  c._seg = seg; c._fill = seg.querySelector('.fill'); c._lbl = seg.querySelector('.lbl');
+  chapWrap.appendChild(seg);
+});
+function updateChapters(){
+  const curCi = CHAPTERS.findIndex(c => c.key === SLIDES[cur].item);
+  CHAPTERS.forEach((c, ci) => {
+    let fill = 0, state = '', extra = '';
+    if (curCi === -1) {}
+    else if (ci < curCi) { fill = 1; state = 'done'; extra = `<span class="pos">✓</span>`; }
+    else if (ci === curCi) { state = 'current'; fill = (c.idxs.indexOf(cur) + 1) / c.idxs.length;
+      extra = `<span class="pos">${c.idxs.indexOf(cur) + 1}/${c.idxs.length}</span>`; }
+    c._seg.classList.toggle('current', state === 'current');
+    c._seg.classList.toggle('done', state === 'done');
+    c._fill.style.width = (fill * 100) + '%';
+    c._lbl.innerHTML = chapLabel(c, extra);
+  });
+}
+function placeChapters(){
+  // pin the progress bar flush under the slide's bottom edge (so the in-slide footer sits
+  // right above it), but never let the bar or the HUD slide off-screen.
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  const deckBottom = 1080 * scale;
+  const chapH = chapWrap.offsetHeight || 30;
+  const top = Math.min(deckBottom, window.innerHeight - hudEl.offsetHeight - chapH);
+  chapWrap.style.top = Math.max(0, top) + 'px';
+  chapWrap.style.bottom = 'auto';
+}
+
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  counter.textContent = `${cur+1} / ${slides.length}`;
+  updateChapters();
+  placeChapters();
+  location.hash = cur+1;
+}
+function go(i){ cur = Math.max(0, Math.min(slides.length-1, i)); render(); }
+function next(){ go(cur+1); }
+function prev(){ go(cur-1); }
+document.getElementById('next').addEventListener('click', next);
+document.getElementById('prev').addEventListener('click', prev);
+
+window.addEventListener('keydown', e => {
+  switch(e.key){
+    case 'PageDown': case 'ArrowRight': case 'ArrowDown': case ' ': case 'Enter': e.preventDefault(); next(); break;
+    case 'PageUp': case 'ArrowLeft': case 'ArrowUp': case 'Backspace': e.preventDefault(); prev(); break;
+    case 'Home': e.preventDefault(); go(0); break;
+    case 'End': e.preventDefault(); go(slides.length-1); break;
+  }
+});
+let wheelLock = false;
+window.addEventListener('wheel', e => {
+  if (wheelLock || Math.abs(e.deltaY) < 8) return;
+  wheelLock = true; (e.deltaY > 0 ? next : prev)();
+  setTimeout(() => { wheelLock = false; }, 550);
+}, { passive:true });
+let ty = null;
+window.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, {passive:true});
+window.addEventListener('touchend', e => {
+  if (ty === null) return;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) (dy < 0 ? next : prev)();
+  ty = null;
+}, {passive:true});
+
+function fit(){
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  deck.style.transform = `scale(${scale})`;
+  placeChapters();
+}
+window.addEventListener('resize', fit);
+fit();
+
+const h = parseInt(location.hash.replace('#',''), 10);
+go(Number.isFinite(h) && h>=1 ? h-1 : 0);
+</script>
+</body>
+</html>

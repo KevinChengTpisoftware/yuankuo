@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif">
+<defs>
+<filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/></marker>
+<marker id="arrow-g" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/></marker>
+</defs>
+<rect width="1000" height="500" fill="#ffffff"/>
+<g filter="url(#shadow)"><rect x="250" y="30" width="260" height="180" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="380.0" y="100" font-size="34" font-weight="800" fill="#1d4ed8" text-anchor="middle">Q2</text>
+<text x="380.0" y="138" font-size="19" font-weight="700" fill="#1e293b" text-anchor="middle">重要、不急</text>
+<text x="380.0" y="168" font-size="14.5" font-weight="400" fill="#475569" text-anchor="middle">排入計畫，穩定推進</text>
+<g filter="url(#shadow)"><rect x="520" y="30" width="260" height="180" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/></g>
+<text x="650.0" y="100" font-size="34" font-weight="800" fill="#b91c1c" text-anchor="middle">Q1</text>
+<text x="650.0" y="138" font-size="19" font-weight="700" fill="#1e293b" text-anchor="middle">重要且急迫</text>
+<text x="650.0" y="168" font-size="14.5" font-weight="400" fill="#475569" text-anchor="middle">最先處理</text>
+<g filter="url(#shadow)"><rect x="250" y="220" width="260" height="180" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/></g>
+<text x="380.0" y="290" font-size="34" font-weight="800" fill="#475569" text-anchor="middle">Q4</text>
+<text x="380.0" y="328" font-size="19" font-weight="700" fill="#1e293b" text-anchor="middle">不重要、不急</text>
+<text x="380.0" y="358" font-size="14.5" font-weight="400" fill="#475569" text-anchor="middle">最後處理</text>
+<g filter="url(#shadow)"><rect x="520" y="220" width="260" height="180" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/></g>
+<text x="650.0" y="290" font-size="34" font-weight="800" fill="#b45309" text-anchor="middle">Q3</text>
+<text x="650.0" y="328" font-size="19" font-weight="700" fill="#1e293b" text-anchor="middle">不重要但急迫</text>
+<text x="650.0" y="358" font-size="14.5" font-weight="400" fill="#475569" text-anchor="middle">視時間處理</text>
+<path d="M 215 400 L 215 30" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-g)"/>
+<text x="215" y="22" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">重要性 高</text>
+<text x="228" y="396" font-size="13" font-weight="400" fill="#64748b" text-anchor="start">低</text>
+<path d="M 250 422 L 780 422" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-g)"/>
+<text x="250" y="446" font-size="14" font-weight="700" fill="#334155" text-anchor="start">急迫性 低</text>
+<text x="780" y="446" font-size="14" font-weight="700" fill="#334155" text-anchor="end">急迫性 高</text>
+<g filter="url(#shadow)"><rect x="20" y="150" width="150" height="70" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/></g>
+<text x="95" y="180" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">病人拖曳</text>
+<text x="95" y="203" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">願望卡片</text>
+<path d="M 172 185 L 246 185" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="810" y="150" width="170" height="100" rx="8" fill="#0f172a" stroke="#0f172a" stroke-width="1.5"/></g>
+<text x="895" y="185" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">系統依位置</text>
+<text x="895" y="208" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">排出先後順序</text>
+<text x="895" y="232" font-size="12.5" font-weight="400" fill="#e2e8f0" text-anchor="middle">Q1 → Q2 → Q3 → Q4</text>
+<path d="M 808 200 L 778 200" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-g)"/>
+</svg>

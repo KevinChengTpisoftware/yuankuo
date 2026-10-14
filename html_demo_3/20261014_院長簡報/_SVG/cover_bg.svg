@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b3f3b"/><stop offset=".55" stop-color="#0f766e"/><stop offset="1" stop-color="#7fe0cf"/></linearGradient>
+<linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14796f"/><stop offset="1" stop-color="#0a4a45"/></linearGradient>
+<radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fde68a" stop-opacity=".95"/><stop offset="1" stop-color="#fde68a" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#sky)"/>
+<circle cx="1500" cy="560" r="330" fill="url(#sun)"/>
+<circle cx="1500" cy="560" r="70" fill="#fef3c7" opacity=".9"/>
+<!-- far hills -->
+<path d="M0 760 Q300 640 620 730 T1240 700 T1920 720 V1080 H0Z" fill="#0d5f58" opacity=".55"/>
+<!-- hospital -->
+<g transform="translate(1000 330)">
+<rect x="150" y="60" width="520" height="400" rx="6" fill="#f0fdfa"/>
+<rect x="0" y="190" width="170" height="270" rx="6" fill="#ccfbf1"/>
+<rect x="650" y="190" width="170" height="270" rx="6" fill="#ccfbf1"/>
+<rect x="150" y="60" width="520" height="26" fill="#14b8a6"/>
+<g fill="#5eead4" opacity=".85">
+<!-- windows main -->
+<g id="row"><rect x="190" y="120" width="52" height="60" rx="4"/><rect x="270" y="120" width="52" height="60" rx="4"/><rect x="350" y="120" width="52" height="60" rx="4"/><rect x="430" y="120" width="52" height="60" rx="4"/><rect x="510" y="120" width="52" height="60" rx="4"/><rect x="590" y="120" width="52" height="60" rx="4"/></g>
+<use href="#row" y="95"/><use href="#row" y="190"/>
+<rect x="30" y="230" width="46" height="54" rx="4"/><rect x="95" y="230" width="46" height="54" rx="4"/>
+<rect x="30" y="320" width="46" height="54" rx="4"/><rect x="95" y="320" width="46" height="54" rx="4"/>
+<rect x="680" y="230" width="46" height="54" rx="4"/><rect x="745" y="230" width="46" height="54" rx="4"/>
+<rect x="680" y="320" width="46" height="54" rx="4"/><rect x="745" y="320" width="46" height="54" rx="4"/>
+</g>
+<!-- entrance -->
+<rect x="340" y="370" width="140" height="90" rx="6" fill="#0f766e"/>
+<rect x="355" y="385" width="50" height="75" fill="#99f6e4"/><rect x="415" y="385" width="50" height="75" fill="#99f6e4"/>
+<!-- cross sign -->
+<circle cx="410" cy="10" r="46" fill="#fff"/>
+<rect x="397" y="-18" width="26" height="56" rx="4" fill="#ef4444"/><rect x="382" y="-3" width="56" height="26" rx="4" fill="#ef4444"/>
+</g>
+<!-- ground -->
+<path d="M0 860 Q500 800 1000 850 T1920 830 V1080 H0Z" fill="url(#gr)"/>
+<!-- rising stair path: unlock steps toward the hospital -->
+<g fill="#fef3c7">
+<path d="M930 1080 L1130 1080 L1290 800 L1230 800Z" opacity=".35"/>
+</g>
+<g>
+<rect x="1070" y="1000" width="170" height="22" rx="5" fill="#fde68a"/>
+<rect x="1100" y="960" width="150" height="22" rx="5" fill="#fcd34d"/>
+<rect x="1125" y="922" width="135" height="20" rx="5" fill="#fbbf24"/>
+<rect x="1148" y="888" width="120" height="18" rx="5" fill="#f59e0b"/>
+<rect x="1170" y="858" width="105" height="16" rx="5" fill="#d97706"/>
+</g>
+<!-- trees -->
+<g fill="#0a4a45"><rect x="1590" y="780" width="14" height="90"/><circle cx="1597" cy="760" r="62"/><rect x="1730" y="800" width="12" height="80"/><circle cx="1736" cy="785" r="50"/><rect x="880" y="810" width="12" height="70"/><circle cx="886" cy="795" r="44"/></g>
+<g fill="#34d399" opacity=".5"><circle cx="1580" cy="745" r="30"/><circle cx="1722" cy="772" r="24"/></g>
+</svg>

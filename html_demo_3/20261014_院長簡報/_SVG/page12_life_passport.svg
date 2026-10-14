@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" width="100%" height="100%" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif">
+<defs>
+<filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/></marker>
+<marker id="arrow-g" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/></marker>
+</defs>
+<rect width="1000" height="470" fill="#ffffff"/>
+<g filter="url(#shadow)"><rect x="20" y="10" width="960" height="450" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/></g>
+<text x="500" y="46" font-size="20" font-weight="700" fill="#065f46" text-anchor="middle">生活功能解鎖護照</text>
+<g filter="url(#shadow)"><rect x="50" y="70" width="900" height="200" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/><path d="M 51 104 L 51 78 Q 51 71 58 71 L 942 71 Q 949 71 949 78 L 949 104 Z" fill="#e2e8f0"/><rect x="50" y="70" width="900" height="200" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1.5"/></g>
+<text x="70" y="93" font-size="15" font-weight="700" fill="#1e293b" text-anchor="start">1.0 任務闖關</text>
+<circle cx="100" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="100" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">食</text>
+<circle cx="160" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="160" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">衣</text>
+<circle cx="220" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="220" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">住</text>
+<circle cx="280" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="280" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">行</text>
+<circle cx="340" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="340" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">育</text>
+<circle cx="400" cy="140" r="22" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/><text x="400" y="147" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">樂</text>
+<circle cx="540" cy="140" r="26" fill="#cd7f32" stroke="#ffffff" stroke-width="3"/><text x="540" y="148" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle">銅</text>
+<path d="M 572 140 L 648 140" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-g)"/>
+<circle cx="680" cy="140" r="26" fill="#94a3b8" stroke="#ffffff" stroke-width="3"/><text x="680" y="148" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle">銀</text>
+<path d="M 712 140 L 788 140" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-g)"/>
+<circle cx="820" cy="140" r="26" fill="#f59e0b" stroke="#ffffff" stroke-width="3"/><text x="820" y="148" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle">金</text>
+<text x="220" y="185" font-size="13" font-weight="500" fill="#475569" text-anchor="middle">六大生活領域</text>
+<text x="680" y="185" font-size="13" font-weight="500" fill="#475569" text-anchor="middle">每個領域三級</text>
+<g filter="url(#shadow)"><rect x="170" y="208" width="170" height="40" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="255" y="234" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">完成任務</text>
+<path d="M 342 228 L 418 228" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="420" y="208" width="170" height="40" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/></g>
+<text x="505" y="234" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">解鎖</text>
+<path d="M 592 228 L 668 228" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="670" y="208" width="170" height="40" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/></g>
+<text x="755" y="234" font-size="15" font-weight="700" fill="#b45309" text-anchor="middle">慶祝畫面</text>
+<g filter="url(#shadow)"><rect x="50" y="290" width="900" height="140" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/><path d="M 51 324 L 51 298 Q 51 291 58 291 L 942 291 Q 949 291 949 298 L 949 324 Z" fill="#e2e8f0"/><rect x="50" y="290" width="900" height="140" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1.5"/></g>
+<text x="70" y="313" font-size="15" font-weight="700" fill="#1e293b" text-anchor="start">2.0 個人照護計畫</text>
+<g filter="url(#shadow)"><rect x="110" y="342" width="200" height="60" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/></g>
+<text x="210" y="379" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">我的願望</text>
+<path d="M 312 372 L 398 372" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="400" y="342" width="200" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="500" y="379" font-size="18" font-weight="700" fill="#1d4ed8" text-anchor="middle">我的目標</text>
+<path d="M 602 372 L 688 372" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<g filter="url(#shadow)"><rect x="690" y="342" width="200" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/></g>
+<text x="790" y="379" font-size="18" font-weight="700" fill="#1d4ed8" text-anchor="middle">任務進度</text>
+</svg>
