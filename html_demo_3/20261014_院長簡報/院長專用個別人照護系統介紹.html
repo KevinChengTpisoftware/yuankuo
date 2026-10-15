@@ -297,18 +297,18 @@ const SLIDES = [
 
   { type:"shot", plain:true, item:"c1", kicker:"階段 ①　入院建檔",
     title:"建立個案主檔",
-    sub:"一位病人一份主檔，轉換階段不覆蓋舊資料",
+    sub:"一位病人一份主檔，轉換照護模式不覆蓋舊資料",
     img:"_SVG/p05_stage1_files.svg" },
 
-  { type:"shots", item:"c1", kicker:"階段 ①　系統畫面", title:"個案主檔與照護階段歷程", take:"病人轉換階段時，系統新增一筆歷程，舊資料不覆蓋", sub:"變更階段時新增歷程，不覆蓋舊階段",
-    shots:[["_screens/s1_patient.png","① 個案主檔：基本資料、識別碼、照護階段歷程"],["_screens/s1b_stage_modal.png","變更照護階段：新增歷程，不覆蓋舊階段"]] },
+  { type:"shots", item:"c1", kicker:"階段 ①　系統畫面", title:"個案主檔與照護模式歷程", take:"病人轉換照護模式時，系統新增一筆歷程，舊資料不覆蓋", sub:"變更照護模式時新增歷程，不覆蓋舊紀錄",
+    shots:[["_screens/s1_patient.png","① 個案主檔：基本資料、識別碼、照護模式歷程"],["_screens/s1b_stage_modal.png","變更照護模式：新增歷程，不覆蓋舊紀錄"]] },
 
   { type:"shot", plain:true, item:"c1", kicker:"階段 ②　認識病人",
-    title:"熟識人資料：七個專業共填",
+    title:"熟識人資料：八個專業共填，可彈性增加",
     sub:"各專業不必重複問病人同樣的問題",
     img:"_SVG/p07_stage2_hub.svg" },
 
-  { type:"shot", item:"c1", kicker:"階段 ②　系統畫面", title:"熟識人：跨專業總覽", take:"七個專業各填各的欄位；每次修改都留下填寫者與時間", sub:"共同資料與各專業區塊並列，每區塊標示填寫者與時間",
+  { type:"shot", item:"c1", kicker:"階段 ②　系統畫面", title:"熟識人：跨專業總覽", take:"八個專業各填各的欄位；每次修改都留下填寫者與時間", sub:"共同資料與各專業區塊並列，每區塊標示填寫者與時間",
     img:"_screens/s2_familiar.png" },
 
   { type:"shot", plain:true, item:"c1", kicker:"階段 ③　選願望",
@@ -329,10 +329,10 @@ const SLIDES = [
 
   { type:"shot", plain:true, item:"c1", kicker:"階段 ⑤　選任務",
     title:"一個願望，拆成多個生活任務",
-    sub:"150 項任務，所有階段的病人都可以使用",
+    sub:"150 項任務，所有照護模式的病人都可以使用",
     img:"_SVG/p12_stage5_tasks.svg" },
 
-  { type:"shot", item:"c1", kicker:"階段 ⑤　系統畫面", title:"生活復健任務：150 項任務庫", take:"一個願望拆成多個任務；150 項任務所有階段共用", sub:"每張任務卡標示銅、銀、金級與所屬階段",
+  { type:"shot", item:"c1", kicker:"階段 ⑤　系統畫面", title:"生活復健任務：150 項任務庫", take:"一個願望拆成多個任務；150 項任務所有照護模式共用", sub:"每張任務卡標示銅、銀、金級與所屬階段",
     img:"_screens/s5_tasks.png" },
 
   { type:"shot", plain:true, item:"c1", kicker:"階段 ⑥　計畫與追蹤",
@@ -350,7 +350,7 @@ const SLIDES = [
 
   { type:"shot", item:"c1", kicker:"階段 ⑥　計畫與追蹤",
     title:"每次儲存都是新版本",
-    sub:"舊版本不會消失；系統自動提醒 80 天修訂",
+    sub:"舊版本不會消失；系統依個案設定的天數或日期提醒修訂",
     img:"_SVG/page11_plan_tracking.svg" },
 
   { type:"shot", item:"c1", kicker:"階段 ⑥　系統畫面", title:"版本比較：標示「已變更」", take:"每次儲存都是新版本，舊版不消失，差異一目了然", sub:"可檢視各版本內容與差異",
@@ -361,8 +361,8 @@ const SLIDES = [
     sub:"階段 ⑥ 之後，病人拿到自己的護照，貫穿住院期間直到出院",
     img:"_SVG/page12_life_passport.svg" },
 
-  { type:"shots", item:"c2", kicker:"病人端　系統畫面", title:"護照 1.0 與 2.0", take:"病人與家屬看同一份資料，進度一目了然", sub:"病人與家屬看同一份資料，進度一目了然",
-    shots:[["_screens/s7_passport1.png","護照 1.0：獎盃櫃與成就徽章"],["_screens/s7b_passport_task.png","點任務卡：更新狀態與協助夥伴"],["_screens/s7c_passport2.png","護照 2.0：我的願望、目標與任務進度"]] },
+  { type:"shots", item:"c2", kicker:"病人端　系統畫面", title:"生活功能護照：願望、目標與任務", take:"150 項任務連到病人的願望與目標，進度一目了然", sub:"病人與家屬看同一份資料，進度一目了然",
+    shots:[["_screens/s7_passport.png","護照首頁：進度、獎盃櫃與成就徽章"],["_screens/s7c_passport_links.png","我的願望與目標：每個願望對應的生活任務"],["_screens/s7b_passport_task.png","點任務卡：更新狀態與共學夥伴"]] },
 
   { type:"shot", plain:true, item:"c2", kicker:"病人端",
     title:"護照對三方的好處",
@@ -379,23 +379,23 @@ const SLIDES = [
     sub:"可追溯、不覆蓋、人為把關、可串接",
     img:"_SVG/p24_quality.svg" },
 
-  { type:"shot", item:"c3", kicker:"品質與安全　系統畫面", title:"後台管理：操作紀錄", take:"誰、何時、做了什麼，全部可追溯", sub:"計畫新版本、AI 草稿、階段變更、熟識人更新，皆有紀錄",
+  { type:"shot", item:"c3", kicker:"品質與安全　系統畫面", title:"後台管理：操作紀錄", take:"誰、何時、做了什麼，全部可追溯", sub:"計畫新版本、AI 草稿、照護模式變更、熟識人更新，皆有紀錄",
     img:"_screens/s8_audit.png" },
 
   { type:"shot", plain:true, item:"c3", kicker:"目前進度",
     title:"現況：展示版",
-    sub:"如實報告目前的系統狀態",
+    sub:"目前系統的狀態與後續時程",
     img:"_SVG/p26_status.svg" },
 
   { type:"shot", plain:true, item:"c3", kicker:"後續規劃",
-    title:"四步走向正式上線",
-    sub:"展示版 → 欄位確認 → 正式上線 → 成果分析",
+    title:"時程：從流程確認到場域示範",
+    sub:"預計 12 月底系統落地，目標 3/30 前完成 100 個案示範；系統串接排在第二期",
     img:"_SVG/p27_roadmap.svg" },
 
   { type:"shot", item:"c3", kicker:"成果分析　系統畫面（示範）",
     title:"成果分析：雷達圖與群體統計",
     sub:"個人看雷達圖，群體看統計；以示範資料即時計算",
-    take:"個人六大領域雷達圖，加上全體病人各領域解鎖、階段與願望類別統計",
+    take:"個人六大領域雷達圖，加上全體病人各領域解鎖、照護模式與願望類別統計",
     img:"_screens/s9_analytics.png" },
 
   { type:"shot", plain:true, item:"c4", kicker:"院長結語",

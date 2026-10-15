@@ -1,0 +1,74 @@
+{
+  "clock": "2026-10-14T07:56:00+08:00",
+  "scenario": "tests/scenario.cjs",
+  "shots": {
+    "s1_patient": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "2c4e9defb52ec0b3"
+    },
+    "s1b_stage_modal": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "533aee1489ca0125"
+    },
+    "s2_familiar": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "e8a6b5c26df123ce"
+    },
+    "s3_wishes": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "cc6456a2b236ce34"
+    },
+    "s3b_wish_detail": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "a6f7fa84a9fa4203"
+    },
+    "s4_quad_placed": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "aa9397b1273d4277"
+    },
+    "s5_tasks": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "b1ebabebedbd46c1"
+    },
+    "s6_plan": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "2bb5d9a4b4c21058"
+    },
+    "s6c_plan_ai": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "bcc227ea6451f8f1"
+    },
+    "s6d_versions": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "b1e20a57d50f12c5"
+    },
+    "s6e_commit_modal": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "160f6e5df9f81126"
+    },
+    "s6f_ver_diff": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "792f92c7e70e8a99"
+    },
+    "s7_passport": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "1ff240794bd3fc93"
+    },
+    "s7b_passport_task": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "e531ecded3e4f0cf"
+    },
+    "s7c_passport_links": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "956670e4f4741a10"
+    },
+    "s8_audit": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "8c12ce931cf49f09"
+    },
+    "s9_analytics": {
+      "ui": "f51bac657f2d7e2d",
+      "png": "c95628a89d97563a"
+    }
+  }
+}

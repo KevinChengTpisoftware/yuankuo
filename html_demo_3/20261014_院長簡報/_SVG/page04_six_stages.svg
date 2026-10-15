@@ -12,7 +12,7 @@
 <g filter="url(#shadow)"><rect x="30" y="90" width="140" height="190" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><path d="M 31 130 L 31 98 Q 31 91 38 91 L 162 91 Q 169 91 169 98 L 169 130 Z" fill="#dbeafe"/><rect x="30" y="90" width="140" height="190" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5"/></g>
 <text x="100.0" y="116" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">① 建檔</text>
 <text x="100.0" y="168" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">個案主檔</text>
-<text x="100.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">照護階段</text>
+<text x="100.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">照護模式</text>
 <line x1="44" y1="218" x2="156" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
 <text x="100.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
 <text x="100.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">護理／行政</text>
@@ -23,7 +23,7 @@
 <text x="260.0" y="190" font-size="13.5" font-weight="500" fill="#334155" text-anchor="middle">熟識人資料</text>
 <line x1="204" y1="218" x2="316" y2="218" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
 <text x="260.0" y="240" font-size="11" font-weight="400" fill="#64748b" text-anchor="middle">主角</text>
-<text x="260.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">七個專業</text>
+<text x="260.0" y="262" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">八個專業</text>
 <path d="M 332 185 L 348 185" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 <g filter="url(#shadow)"><rect x="350" y="90" width="140" height="190" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/><path d="M 351 130 L 351 98 Q 351 91 358 91 L 482 91 Q 489 91 489 98 L 489 130 Z" fill="#d1fae5"/><rect x="350" y="90" width="140" height="190" rx="8" fill="none" stroke="#10b981" stroke-width="1.5"/></g>
 <text x="420.0" y="116" font-size="15" font-weight="700" fill="#047857" text-anchor="middle">③ 選願望</text>
@@ -59,7 +59,7 @@
 <path d="M 900.0 282 L 900.0 332" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 <g filter="url(#shadow)"><rect x="560" y="335" width="400" height="70" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/></g>
 <text x="760" y="366" font-size="17" font-weight="700" fill="#065f46" text-anchor="middle">生活功能解鎖護照</text>
-<text x="760" y="390" font-size="13" font-weight="400" fill="#334155" text-anchor="middle">病人端：任務闖關＋個人照護計畫</text>
+<text x="760" y="390" font-size="13" font-weight="400" fill="#334155" text-anchor="middle">病人端：任務闖關＋願望與目標</text>
 <path d="M 558 370 L 442 370" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 <g filter="url(#shadow)"><rect x="30" y="335" width="410" height="70" rx="8" fill="#0f172a" stroke="#0f172a" stroke-width="1.5"/></g>
 <text x="235" y="366" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">出院成果（規劃）</text>
