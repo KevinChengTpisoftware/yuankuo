@@ -1,0 +1,15 @@
+{
+  "name": "yk-demo3",
+  "private": true,
+  "description": "員郭醫院個別化復健系統展示版的測試與截圖工具",
+  "scripts": {
+    "test": "node --test tests/demo-core.test.cjs",
+    "test:browser": "node tests/run-browser.cjs",
+    "lint:terms": "node tests/term-lint.cjs",
+    "screens": "node tests/capture-screens.cjs",
+    "gates": "node tests/gates.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
