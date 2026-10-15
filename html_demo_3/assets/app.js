@@ -22,7 +22,7 @@ const STAGES=['PAC','復健病房','一般復健','OPD'];
 const STAGE_DESC={PAC:'急性後期照護',復健病房:'住院復健',一般復健:'一般復健治療',OPD:'門診追蹤'};
 const ROLES=[
   {k:'PT',label:'物理治療師 PT',name:'王大明'},{k:'OT',label:'職能治療師 OT',name:'林雅婷'},{k:'ST',label:'語言治療師 ST',name:'陳怡君'},
-  {k:'Dietitian',label:'臨床營養師',name:'張雅惠'},{k:'Dr',label:'主治醫師',name:'李志明'},{k:'Nurse',label:'專責護理師',name:'黃佳吟'},{k:'SW',label:'社工／出院準備',name:'周美玲'},
+  {k:'Dietitian',label:'臨床營養師',name:'張雅惠'},{k:'Dr',label:'主治醫師',name:'李志明'},{k:'Pharm',label:'藥師',name:'吳佩珊'},{k:'Nurse',label:'專責護理師',name:'黃佳吟'},{k:'SW',label:'社工／出院準備',name:'周美玲'},
   {k:'Clerk',label:'書記／行政',name:'建檔示範'},{k:'Admin',label:'管理員',name:'管理示範'}
 ];
 const FAM={
@@ -32,6 +32,7 @@ const FAM={
   ST:{label:'語言治療 ST',fields:[['swallow','吞嚥功能'],['speech','語言與溝通'],['cog','認知溝通'],['note','ST 備註']]},
   Dietitian:{label:'臨床營養',fields:[['status','體位／營養狀態'],['texture','飲食質地與限制'],['supp','管灌／營養補充'],['allergy','過敏與禁忌'],['note','營養備註']]},
   Dr:{label:'主治醫師',fields:[['dx','診斷與病史'],['risk','用藥與醫療風險'],['prognosis','預後與醫療決策'],['note','醫師備註']]},
+  Pharm:{label:'藥師',fields:[['meds','目前用藥清單'],['risk','用藥風險（跌倒、吞嚥、交互作用）'],['edu','用藥衛教'],['note','藥師備註']]},
   Nurse:{label:'專責護理',fields:[['skin','皮膚／疼痛'],['elim','排泄與睡眠'],['care','照護注意事項'],['edu','照顧者衛教'],['note','護理備註']]},
   SW:{label:'社工／出院準備',fields:[['support','家庭支持'],['econ','經濟與資源'],['dc','出院準備與銜接'],['note','社工備註']]}
 };
@@ -54,7 +55,7 @@ const TASK_BY_ID=Object.fromEntries(TASKS.map(t=>[t.id,t]));
 const iconOf=id=>id===150?'assets/icons/cup-150-1.png':`assets/icons/${id}.png`;
 
 /* ============ 資料與儲存 ============ */
-let db, ui={view:'patient',wd:'all',td:'食',tt:'all',tq:'',pd:'食',pv:'2',ft:'overview',ad:'tasks',adq:'',adom:'all',pend:null,famDraft:{},famKey:''};
+let db, ui={view:'patient',wd:'all',td:'食',tt:'all',tq:'',pd:'食',ft:'overview',ad:'tasks',adq:'',adom:'all',pend:null,famDraft:{},famKey:''};
 
 function seed(){
   const rel=ids=>[...new Set(ids.flatMap(id=>WISHES.find(w=>w.id===id).rel))].sort((a,b)=>a-b);
@@ -109,7 +110,7 @@ function seed(){
   p3.records=[{at:'2026-09-26T09:30',by:'物理治療師 王大明',stage:'OPD',ids:p3.sel.slice(0,3)}];
   p3.fam={Dr:{dx:'右肩袖肌腱修補術後 8 週。',prognosis:'預期 3 個月內恢復日常上肢活動。',_by:'主治醫師 李志明',_at:'2026-09-25T09:00'}};
   p3.famHist=[{tab:'Dr',by:'主治醫師 李志明',at:'2026-09-25T09:00',data:clone(p3.fam.Dr)}];
-  // 病人 4：黃奶奶（復健病房，已滿 80 天，可展示 80 天修訂提醒）
+  // 病人 4：黃奶奶（復健病房，已超過預設修訂天數，可展示週期修訂提醒）
   const w4=['wish-cloth-01','wish-home-01'],t4=rel(w4);
   const p4={id:'P-0004',name:'黃奶奶',sex:'女',age:80,bed:'B05-2',mrn:'0045678',ext:{pac:'',xin:'XX-7781'},caregiver:'外籍看護',decider:'次女 黃小玲',diagnosis:'髖關節骨折術後',
     stages:[{stage:'復健病房',from:'2026-07-08',to:null,note:'骨折術後轉入'}],wishes:w4,custom:[],place:{'wish-cloth-01':{x:70,y:25},'wish-home-01':{x:30,y:75}},sel:t4,
@@ -124,9 +125,9 @@ function seed(){
     ['2026-09-30T14:00','物理治療師 王大明',p1,'復健計畫新版本','v2｜定期檢討｜坐站轉換進步，短期目標升級為扶欄杆站立 5 分鐘'],
     ['2026-09-29T09:40','物理治療師 王大明',p1,'熟識人更新','物理治療 PT'],
     ['2026-09-25T10:00','社工／出院準備 周美玲',p1,'熟識人更新','社工／出院準備'],
-    ['2026-09-25T09:10','專責護理師 黃佳吟',p3,'變更照護階段','一般復健 → OPD（2026-09-25）'],
+    ['2026-09-25T09:10','專責護理師 黃佳吟',p3,'變更照護模式','一般復健 → OPD（2026-09-25）'],
     ['2026-09-16T11:00','物理治療師 王大明',p1,'復健計畫新版本','v1｜初版｜PAC 收案建立初版復健計畫'],
-    ['2026-09-15T09:00','專責護理師 黃佳吟',p1,'變更照護階段','復健病房 → PAC（2026-09-15）'],
+    ['2026-09-15T09:00','專責護理師 黃佳吟',p1,'變更照護模式','復健病房 → PAC（2026-09-15）'],
     ['2026-08-01T10:00','物理治療師 王大明',p4,'復健計畫新版本','v2｜定期檢討｜髖關節負重進步，加入站立訓練']
   ].map(([at,by,p,action,detail])=>({at:new Date(at).toISOString(),by,pid:p.id,pname:p.name,action,detail}));
   return{patients:[p1,p2,p3,p4],cur:'P-0001',logs,role:'PT',stageCfg:{PAC:true,復健病房:true,一般復健:false,OPD:false},taskOff:{},taskEdit:{},phrases:[...DEFAULT_PHRASES],dayShift:0};
@@ -145,6 +146,10 @@ const who=()=>`${role().label.replace(/ [A-Z]+$/,'')} ${role().name}`;
 function log(action,detail,p){db.logs.unshift({at:now().toISOString(),by:who(),pid:(p||P()).id,pname:(p||P()).name,action,detail:detail||''});if(db.logs.length>800)db.logs.length=800;save()}
 function stageOf(p){return (p.stages.find(s=>!s.to)||p.stages[p.stages.length-1]).stage}
 const planOn=p=>!!db.stageCfg[stageOf(p)]||p.planOverride;
+/* 熟識人區塊（R-05）：內建 FAM 合併後台設定。famAll 含停用區塊，供歷史資料顯示；famOn 只含啟用中的區塊。 */
+const famAll=()=>DemoCore.famDef(FAM,db.famConfig);
+const famOn=()=>Object.fromEntries(Object.entries(famAll()).filter(([,f])=>!f.off));
+const liveFields=f=>f.fields.filter(x=>!x[2].off);
 const task=id=>{const t=TASK_BY_ID[id];return t?{...t,...(db.taskEdit[id]||{})}:null};
 const wishCatalog=()=>DemoCore.catalog(WISHES,db);
 const wishObj=(p,id)=>wishCatalog().find(w=>w.id===id)||p.custom.find(w=>w.id===id);
@@ -186,22 +191,22 @@ const VIEWS={},AFTER={};
 VIEWS.patient=()=>{
   const p=P(),st=stageOf(p),on=planOn(p),cur=p.stages.find(s=>!s.to)||p.stages[p.stages.length-1];
   const node=(b,t,dim)=>`<div class="node ${dim?'dim':''}"><b>${b}</b>${t}</div>`;
-  return `<div class="hero"><div><div class="eyebrow">PATIENT-CENTERED · 以病人為核心</div><h1>${esc(p.name)}<br><span style="font-size:.55em;color:var(--muted)">目前照護階段：${st}</span></h1>
-    <p>病人只有一份主檔與一份熟識人資料；照護階段會隨時間改變並完整保留歷程，依階段決定是否需要建立短／長期復健計畫。</p></div>
-    <div class="actions"><button class="primary" data-act="stage-modal">變更照護階段</button><button class="ghost-btn" data-act="nav" data-v="admin" data-admin="patients">後台建檔／編輯</button></div></div>
-  <div class="panel"><div class="section-title"><h3>系統流程（依目前階段自動帶出路徑）</h3><span class="badge ${on?'':'gray'}">${on?'本階段需建立復健計畫':'本階段任務儲存即可'}</span></div>
-    <div class="flow">${node('病人主檔',`內部 ID：${p.id}`)}<span class="arrow">→</span>${node('熟識人','所有人都有，跨專業共同填寫')}<span class="arrow">→</span>${node('目前照護階段',`${st}（可隨時間改變）`)}<span class="arrow">→</span>${node('生活復健任務','150 項，所有人都可使用')}<span class="arrow">→</span>${node('是否建立復健計畫？',on?'是 → 短期＋長期＋定期檢討':'否 → 任務儲存即可',!on)}</div>
-    <p class="small" style="margin:10px 0 0">各階段是否啟用復健計畫可於「後台管理 → 階段設定」調整${p.planOverride?'；此病人已由治療師選擇產出復健計畫':''}。</p></div>
+  return `<div class="hero"><div><div class="eyebrow">PATIENT-CENTERED · 以病人為核心</div><h1>${esc(p.name)}<br><span style="font-size:.55em;color:var(--muted)">目前照護模式：${st}</span></h1>
+    <p>病人只有一份主檔與一份熟識人資料；照護模式會隨時間改變並完整保留歷程，依所屬照護模式決定是否需要建立短／長期復健計畫。</p></div>
+    <div class="actions"><button class="primary" data-act="stage-modal">變更照護模式</button><button class="ghost-btn" data-act="nav" data-v="admin" data-admin="patients">後台建檔／編輯</button></div></div>
+  <div class="panel"><div class="section-title"><h3>系統流程（依目前照護模式自動帶出路徑）</h3><span class="badge ${on?'':'gray'}">${on?'此照護模式需建立復健計畫':'此照護模式選完任務即可儲存'}</span></div>
+    <div class="flow">${node('病人主檔',`內部 ID：${p.id}`)}<span class="arrow">→</span>${node('熟識人','所有人都有，跨專業共同填寫')}<span class="arrow">→</span>${node('目前照護模式',`${st}（可隨時間改變）`)}<span class="arrow">→</span>${node('生活復健任務','150 項，所有人都可使用')}<span class="arrow">→</span>${node('是否建立復健計畫？',on?'是 → 短期＋長期＋定期檢討':'否 → 任務儲存即可',!on)}</div>
+    <p class="small" style="margin:10px 0 0">各照護模式是否啟用復健計畫可於「後台管理 → 照護模式設定」調整${p.planOverride?'；此病人已由治療師選擇產出復健計畫':''}。</p></div>
   <div class="grid2">
     <div class="panel"><div class="section-title"><h3>病人基本資料</h3></div>
       <dl class="kv"><dt>姓名</dt><dd>${esc(p.name)}</dd><dt>性別／年齡</dt><dd>${esc(p.sex)}／${p.age} 歲</dd><dt>床號</dt><dd>${esc(p.bed)}</dd><dt>診斷</dt><dd>${esc(p.diagnosis)}</dd><dt>主要照顧者</dt><dd>${esc(p.caregiver)}</dd><dt>醫療決定者</dt><dd>${esc(p.decider)}</dd></dl>
       <hr style="border:0;border-top:1px solid var(--line);margin:14px 0"><h4 style="margin:0 0 8px">識別碼對應（預留未來串接）</h4>
-      <dl class="kv"><dt>系統病人 ID</dt><dd>${p.id}（獨立不變）</dd><dt>院內病歷號 HIS</dt><dd>${esc(p.mrn)||'<span class="muted">未填</span>'}</dd><dt>PAC 系統 ID</dt><dd>${esc(p.ext.pac)||'<span class="muted">未串接</span>'}</dd><dt>信祥系統 ID</dt><dd>${esc(p.ext.xin)||'<span class="muted">未串接</span>'}</dd></dl>
+      <dl class="kv"><dt>系統病人 ID</dt><dd>${p.id}（獨立不變）</dd><dt>院內病歷號 HIS</dt><dd>${esc(p.mrn)||'<span class="muted">未填</span>'}</dd><dt>PAC 系統 ID</dt><dd>${esc(p.ext.pac)||'<span class="muted">未串接</span>'}</dd><dt>杏翔系統 ID</dt><dd>${esc(p.ext.xin)||'<span class="muted">未串接</span>'}</dd></dl>
       <p class="small">現階段由院內人員手動建立；未來可用病歷號等識別資料自動帶入姓名與基本資料，病人主檔不需重做。</p></div>
-    <div class="panel"><div class="section-title"><h3>照護階段歷程</h3><span class="small">舊階段不會被覆蓋</span></div>
+    <div class="panel"><div class="section-title"><h3>照護模式歷程</h3><span class="small">舊照護模式不會被覆蓋</span></div>
       <div class="timeline">${[...p.stages].reverse().map(s=>`<div class="tl-item ${s.to?'':'now'}"><b>${s.stage}</b> <span class="badge ${s.to?'gray':''}">${s.to?'已結束':'目前'}</span><small>${s.from} ～ ${s.to||'迄今'}｜${STAGE_DESC[s.stage]}</small>${s.note?`<small>${esc(s.note)}</small>`:''}</div>`).join('')}</div></div>
   </div>
-  <div class="panel"><div class="section-title"><h3>病人清單</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>系統 ID</th><th>姓名</th><th>目前階段</th><th>復健計畫</th><th>已選願望</th><th>已選任務</th><th></th></tr></thead><tbody>${db.patients.map(x=>`<tr><td>${x.id}</td><td><b>${esc(x.name)}</b></td><td>${stageOf(x)}</td><td>${planOn(x)?`啟用（${x.plans.length} 版）`:'不需要'}</td><td>${x.wishes.length}</td><td>${x.sel.length}</td><td><button class="ghost-btn" data-act="pick-patient" data-id="${x.id}">切換</button></td></tr>`).join('')}</tbody></table></div></div>`;
+  <div class="panel"><div class="section-title"><h3>病人清單</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>系統 ID</th><th>姓名</th><th>照護模式</th><th>復健計畫</th><th>已選願望</th><th>已選任務</th><th></th></tr></thead><tbody>${db.patients.map(x=>`<tr><td>${x.id}</td><td><b>${esc(x.name)}</b></td><td>${stageOf(x)}</td><td>${planOn(x)?`啟用（${x.plans.length} 版）`:'不需要'}</td><td>${x.wishes.length}</td><td>${x.sel.length}</td><td><button class="ghost-btn" data-act="pick-patient" data-id="${x.id}">切換</button></td></tr>`).join('')}</tbody></table></div></div>`;
 };
 
 /* ============ ② 熟識人 ============ */
@@ -219,14 +224,14 @@ VIEWS.tasks=()=>{
   const p=P(),on=planOn(p),list=taskList();
   const relations=relatedItems(p),sugg=relations.map(item=>item.id).filter(id=>!p.sel.includes(id));
   const relCount=id=>relations.find(item=>item.id===id)?.count||0;
-  return `<div class="hero"><div><div class="eyebrow">STEP 5 · 生活復健任務（150 項，所有病人皆可使用）</div><h1>為${esc(p.name)}選擇任務</h1><p>所有照護階段都能使用全部任務。${on?'任務屬於短期或長期，會在下一步「復健計畫」中依此病人的狀況由治療師決定。':'本階段選完任務即可儲存，不需建立復健計畫。'}</p></div><div class="panel" style="margin:0"><b>已選 ${p.sel.length} 項</b></div></div>
+  return `<div class="hero"><div><div class="eyebrow">STEP 5 · 生活復健任務（150 項，所有病人皆可使用）</div><h1>為${esc(p.name)}選擇任務</h1><p>所有照護模式都能使用全部任務。${on?'任務屬於短期或長期，會在下一步「復健計畫」中依此病人的狀況由治療師決定。':'此照護模式選完任務即可儲存，不需建立復健計畫。'}</p></div><div class="panel" style="margin:0"><b>已選 ${p.sel.length} 項</b></div></div>
   ${sugg.length?`<div class="notice ok">依已選願望，系統建議再加入 <b>${sugg.length}</b> 項相關任務。<button class="secondary" data-act="task-suggest" style="margin-left:10px">一鍵帶入建議任務</button></div>`:''}
   <div class="tabs"><button class="ghost-btn ${ui.td==='all'?'on':''}" data-act="task-dom" data-d="all">全部</button>${DKEYS.map(k=>`<button class="ghost-btn ${ui.td===k?'on':''}" data-act="task-dom" data-d="${k}">${DOMAINS[k].emoji} ${k}</button>`).join('')}</div>
   <div class="filterbar"><input id="tq" placeholder="搜尋任務名稱或說明…" value="${esc(ui.tq)}"><select id="tt"><option value="all">全部等級</option>${Object.entries(TIERS).map(([k,v])=>`<option value="${k}" ${ui.tt===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select><span class="badge">顯示 ${list.length} 項</span><button class="secondary" data-act="book-open" data-k="tasks" data-id="${list[0]?.id}">📖 大圖書本閱讀</button></div>
   <div class="task-grid">${list.map(t0=>{const t=task(t0.id),sel=p.sel.includes(t.id),off=db.taskOff[t.id],rc=relCount(t.id);return `<div class="task-card ${sel?'sel':''} ${off?'off':''}" data-act="${off?'':'task-toggle'}" data-id="${t.id}" style="cursor:pointer"><div class="top"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span><span class="small">#${t.id}${rc?` ｜ ${DemoCore.stars(rc)} ${rc} 個願望`:''}</span></div><img src="${iconOf(t.id)}" alt="" loading="lazy" data-act="book-open" data-k="tasks" data-id="${t.id}" title="點圖放大" style="cursor:zoom-in"><h4>${esc(t.n)}</h4><p>${esc(t.x)}</p><div class="top"><span class="small">${t.d}${t.p?'｜'+esc(t.p.slice(0,12)):''}</span><button class="ghost-btn" data-act="task-detail" data-id="${t.id}" style="padding:4px 9px;font-size:12px">詳情</button></div>${sel?'<span class="badge" style="position:absolute;top:34px;right:10px">✓ 已選</span>':''}</div>`}).join('')||'<div class="empty">沒有符合的任務</div>'}</div>
   <div class="panel" style="margin-top:18px"><div class="section-title"><div><h3>${on?'已選任務 '+p.sel.length+' 項':'儲存本次任務紀錄'}</h3><span class="small">${on?'請進入復健計畫，決定每項任務的短／長期。':'一般復健／OPD：選完任務即完成該次紀錄。'}</span></div>
     <div class="actions">${on?`<button class="primary" data-act="nav" data-v="plan" ${p.sel.length?'':'disabled'}>下一步：建立復健計畫 →</button>`:`<button class="ghost-btn" data-act="plan-override">治療師選擇產出復健計畫</button><button class="primary" data-act="task-record" ${p.sel.length?'':'disabled'}>儲存本次任務紀錄（流程結束）</button>`}</div></div>
-    ${!on&&p.records.length?`<h4>歷次任務紀錄</h4>${[...p.records].reverse().map(r=>`<div class="log-row"><time>${fmtT(r.at)}｜${esc(r.by)}｜階段：${r.stage}</time>${r.ids.map(id=>esc(TASK_BY_ID[id]?.n)).join('、')}</div>`).join('')}`:''}</div>`;
+    ${!on&&p.records.length?`<h4>歷次任務紀錄</h4>${[...p.records].reverse().map(r=>`<div class="log-row"><time>${fmtT(r.at)}｜${esc(r.by)}｜照護模式：${r.stage}</time>${r.ids.map(id=>esc(TASK_BY_ID[id]?.n)).join('、')}</div>`).join('')}`:''}</div>`;
 };
 AFTER.tasks=()=>{
   const q=$('#tq');q?.addEventListener('change',e=>{ui.tq=e.target.value.trim();render()});
@@ -234,11 +239,11 @@ AFTER.tasks=()=>{
 };
 function taskDetail(id){
    const t=task(id),p=P(),rel=p.wishes.map(w=>wishObj(p,w)).filter(w=>w&&(w.rel||[]).includes(id));
-  openModal(`${mhead(esc(t.n))}<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><img src="${iconOf(id)}" style="width:120px;height:120px;object-fit:contain" alt=""><div style="flex:1 1 260px"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span> <span class="badge">${t.d}</span> <span class="small">#${id}</span><p style="line-height:1.7">${esc(t.x)}</p>${t.p?`<p class="small">階段：${esc(t.p)}</p>`:''}</div></div>${rel.length?`<p><b>關聯願望：</b>${rel.map(w=>esc(w.n)).join('、')}</p>`:''}<footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="task-toggle" data-id="${id}" data-close="1">${p.sel.includes(id)?'取消選取':'加入已選任務'}</button></footer>`);
+  openModal(`${mhead(esc(t.n))}<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><img src="${iconOf(id)}" style="width:120px;height:120px;object-fit:contain" alt=""><div style="flex:1 1 260px"><span class="tier ${t.t}">${TIERS[t.t][0]} ${TIERS[t.t][1]}</span> <span class="badge">${t.d}</span> <span class="small">#${id}</span><p style="line-height:1.7">${esc(t.x)}</p>${t.p?`<p class="small">階段：${esc(t.p)}</p>`:''}</div></div>${rel.length?`<p><b>關聯願望：</b>${rel.map(w=>esc(w.n)).join('、')}</p>`:''}<footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="task-toggle" data-id="${id}" data-close="1">${p.sel.includes(id)?'取消選取':'加入已選任務'}</button></footer>`); // lint-allow:T2b 「階段：」為任務本身的進程階段 A～D
 }
 function wishDetail(id){
   const p=P(),w=wishObj(p,id);if(!w)return;
   const ul=a=>a&&a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p class="muted">—</p>';
-  openModal(`${mhead((w.i||'⭐')+' '+esc(w.n))}${w.vid?`<video src="${esc(w.vid)}" controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:12px;background:#000;margin-bottom:10px"></video>`:''}<p style="line-height:1.7"><b>第二層文字（預期目標）：</b>${esc(w.s)||'—'}</p>${w.pm?`<h4>需要的能力</h4><p class="small" style="margin:0">姿勢平衡與大動作</p>${ul(w.pm)}<p class="small" style="margin:0">手部功能</p>${ul(w.hf)}<p class="small" style="margin:0">認知與安全知覺</p>${ul(w.cs)}<h4>友善代償技巧與輔具</h4>${ul(w.ad)}`:''}<h4>對應任務</h4><div class="chip-row">${(w.rel||[]).map(i=>`<span class="badge">#${i} ${esc(TASK_BY_ID[i]?.n)}</span>`).join('')||'尚未對應'}</div><footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="wish-toggle" data-id="${esc(id)}" data-close="1">${p.wishCandidates.includes(id)?'取消初選':'加入初選'}</button></footer>`);
+  openModal(`${mhead(esc(w.i||'⭐')+' '+esc(w.n))}${w.vid?`<video src="${esc(w.vid)}" controls playsinline preload="metadata" style="width:100%;max-height:340px;border-radius:12px;background:#000;margin-bottom:10px"></video>`:''}<p style="line-height:1.7"><b>第二層文字（預期目標）：</b>${esc(w.s)||'—'}</p>${w.pm?`<h4>需要的能力</h4><p class="small" style="margin:0">姿勢平衡與大動作</p>${ul(w.pm)}<p class="small" style="margin:0">手部功能</p>${ul(w.hf)}<p class="small" style="margin:0">認知與安全知覺</p>${ul(w.cs)}<h4>友善代償技巧與輔具</h4>${ul(w.ad)}`:''}<h4>對應任務</h4><div class="chip-row">${(w.rel||[]).map(i=>`<span class="badge">#${i} ${esc(TASK_BY_ID[i]?.n)}</span>`).join('')||'尚未對應'}</div><footer><button class="ghost-btn" data-act="close">關閉</button><button class="primary" data-act="wish-toggle" data-id="${esc(id)}" data-close="1">${p.wishCandidates.includes(id)?'取消初選':'加入初選'}</button></footer>`);
   applyViewAccess();
 }

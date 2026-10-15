@@ -213,3 +213,12 @@ button:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--blue)
   .report-view .grid2{display:block}
   .report-view .case-report summary{font-weight:700}
 }
+/* 熟識人區塊設定（R-05） */
+.famcfg-block{border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;background:#fff}.famcfg-block.off{opacity:.6}
+.famcfg-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.famcfg-head .famcfg-name{flex:1 1 220px;font-weight:700}
+/* 生活功能護照：願望與任務連結（R-08） */
+.wish-link{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0;background:#fff}.wl-head .small{margin-top:4px}
+.wl-tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px}
+.wl-task{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:12px;background:#fff;padding:8px 10px;cursor:pointer;font:inherit;color:inherit}.wl-task img{width:56px;height:56px;object-fit:contain;flex:none}.wl-task .small{display:block;margin-top:2px}
+.wl-task.done{border-color:#119447;background:#effaf3}.wl-task.prog{border-color:#d9a521;background:#fff9e8}
+

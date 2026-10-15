@@ -81,9 +81,9 @@ VIEWS.analytics=()=>{
     </div>
   </div>
   <div class="grid2">
-    <div class="panel"><h3>病人照護階段分布</h3>${stageBars}</div>
+    <div class="panel"><h3>病人照護模式分布</h3>${stageBars}</div>
     <div class="panel"><h3>病人選擇的願望類別</h3>${catBars}</div>
   </div>
-  <div class="panel"><div class="section-title"><h3>各病人解鎖進度</h3><span class="small">平均達成率 ${avgPct}%</span></div><div class="table-wrap"><table class="data-table" style="min-width:640px"><thead><tr><th>姓名</th><th>目前階段</th><th>已解鎖</th><th>進行中</th><th>進度</th><th>達成率</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-  <p class="source-note small">展示版以本機示範資料計算。正式版將由資料庫彙總，並可依期間、階段與治療師篩選。</p>`;
+  <div class="panel"><div class="section-title"><h3>各病人解鎖進度</h3><span class="small">平均達成率 ${avgPct}%</span></div><div class="table-wrap"><table class="data-table" style="min-width:640px"><thead><tr><th>姓名</th><th>照護模式</th><th>已解鎖</th><th>進行中</th><th>進度</th><th>達成率</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+  <p class="source-note small">展示版以本機示範資料計算。正式版將由資料庫彙總，並可依期間、照護模式與治療師篩選。</p>`;
 };

@@ -104,7 +104,7 @@ async page => {
     await nav('wishes');await act('book-open').click();
     check(await page.locator('#book').isVisible()&&await page.locator('#book .bk-img').count()===1,'大圖閱讀優先顯示圖片');
     await page.locator('#book [data-b="close"]').click();
-    await nav('passport');check(await page.locator('[data-act="pv"]').count()===2,'護照 1.0 與 2.0 保留');
+    await nav('passport');check(await page.locator('[data-act="pv"]').count()===0&&await page.locator('[data-wish-link]').count()>0,'護照整合為單一版本（10/14 規格變更）');
     await nav('wishes');
     const beforeQuota=await page.evaluate(()=>JSON.stringify(db));
     await page.evaluate(()=>{
@@ -127,7 +127,7 @@ async page => {
     await page.evaluate(()=>{window.originalTestConfirm=window.confirm;window.confirm=()=>true});
     await act('reset-demo').click();
     await page.evaluate(()=>window.confirm=window.originalTestConfirm);
-    check(await page.evaluate(()=>!store.blocked&&JSON.parse(localStorage.getItem('yk-demo3-v2')).schemaVersion===4),'明確確認後可復原示範資料');
+    check(await page.evaluate(()=>!store.blocked&&JSON.parse(localStorage.getItem('yk-demo3-v2')).schemaVersion===5),'明確確認後可復原示範資料');
     check(errors.length===0,'沒有未捕捉的瀏覽器錯誤');
     return {passed:results.length,results,errors};
   }finally{
